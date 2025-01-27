@@ -1,11 +1,11 @@
-import { Form, Input, Button, Flex } from "antd";
+import { Form, Input, Button, Flex, Spin } from "antd";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const Login = () => {
   const navigate = useNavigate();
-
+  const [loading, setLoading] = useState<boolean>(false);
   useEffect(() => {
     const user = localStorage.getItem("user");
 
@@ -23,6 +23,7 @@ const Login = () => {
   const submitHandler = async (e: any) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
     try {
       const config = {
@@ -41,8 +42,10 @@ const Login = () => {
       );
 
       localStorage.setItem("user", JSON.stringify(data));
+      setLoading(false);
       navigate("/dashboard");
     } catch (error: any) {
+      setLoading(false);
       setError(error.response.data.message);
       console.log(error.response);
     }
@@ -82,43 +85,51 @@ const Login = () => {
             borderRadius: 10,
           }}
         >
-          {error && <h3 style={{ color: "#f04848" }}>{error}</h3>}
-          <Form
-            name="layout-multiple-vertical"
-            layout="vertical"
-            onSubmitCapture={submitHandler}
-          >
-            <Form.Item
-              label={<h4>Email :</h4>}
-              name="email"
-              style={{ marginBottom: 12 }}
+          <Spin spinning={loading}>
+            {error && <h3 style={{ color: "#f04848" }}>{error}</h3>}
+            <Form
+              name="layout-multiple-vertical"
+              layout="vertical"
+              onSubmitCapture={submitHandler}
             >
-              <Input value={email} onChange={(e) => setEmail(e.target.value)} />
-            </Form.Item>
-            <Form.Item
-              label={<h4>Password :</h4>}
-              name="password"
-              style={{ marginBottom: 12 }}
-            >
-              <Input.Password
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </Form.Item>
-            <p style={{ textAlign: "end" }}>
-              Lupa Password ? <a href="/lupa-pasword">Reset Password</a>
-            </p>
-            <Form.Item label={null} style={{ textAlign: "end", marginTop: 20 }}>
-              <Flex vertical gap="small" style={{ width: "100%" }}>
-                <Button type="primary" htmlType="submit">
-                  Masuk
-                </Button>
-              </Flex>
-            </Form.Item>
-            <p>
-              Belum Punya Akun ? <a href="/register">Daftar</a>
-            </p>
-          </Form>
+              <Form.Item
+                label={<h4>Email :</h4>}
+                name="email"
+                style={{ marginBottom: 12 }}
+              >
+                <Input
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </Form.Item>
+              <Form.Item
+                label={<h4>Password :</h4>}
+                name="password"
+                style={{ marginBottom: 12 }}
+              >
+                <Input.Password
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </Form.Item>
+              <p style={{ textAlign: "end" }}>
+                Lupa Password ? <a href="/lupa-pasword">Reset Password</a>
+              </p>
+              <Form.Item
+                label={null}
+                style={{ textAlign: "end", marginTop: 20 }}
+              >
+                <Flex vertical gap="small" style={{ width: "100%" }}>
+                  <Button type="primary" htmlType="submit">
+                    Masuk
+                  </Button>
+                </Flex>
+              </Form.Item>
+              <p>
+                Belum Punya Akun ? <a href="/register">Daftar</a>
+              </p>
+            </Form>
+          </Spin>
         </div>
       </div>
     </div>

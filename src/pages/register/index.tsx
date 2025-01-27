@@ -1,10 +1,11 @@
-import { Form, Input, Button, Flex } from "antd";
+import { Form, Input, Button, Flex, Spin } from "antd";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const Register = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const user = localStorage.getItem("user");
@@ -24,6 +25,7 @@ const Register = () => {
   const submitHandler = async (e: any) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
     try {
       const config = {
@@ -44,7 +46,9 @@ const Register = () => {
 
       alert(`akun ${data.nama} berhasil di daftarkan!!`);
       navigate("/login");
+      setLoading(false);
     } catch (error: any) {
+      setLoading(false);
       setError(error.response.data.message);
       console.log(error.response);
     }
@@ -82,66 +86,74 @@ const Register = () => {
             borderRadius: 10,
           }}
         >
-          {error && <h3 style={{ color: "#f04848" }}>{error}</h3>}
-          <Form
-            name="layout-multiple-vertical"
-            layout="vertical"
-            onSubmitCapture={submitHandler}
-          >
-            <Form.Item
-              label={<h4>Nama :</h4>}
-              name="nama"
-              style={{ marginBottom: 12 }}
+          <Spin spinning={loading}>
+            {error && <h3 style={{ color: "#f04848" }}>{error}</h3>}
+            <Form
+              name="layout-multiple-vertical"
+              layout="vertical"
+              onSubmitCapture={submitHandler}
             >
-              <Input value={nama} onChange={(e) => setNama(e.target.value)} />
-            </Form.Item>
-            <Form.Item
-              label={<h4>Email (UMRAH) :</h4>}
-              name="email"
-              style={{ marginBottom: 12 }}
-            >
-              <Input value={email} onChange={(e) => setEmail(e.target.value)} />
-            </Form.Item>
-            <Form.Item
-              label={<h4>Password :</h4>}
-              name="password"
-              style={{ marginBottom: 12 }}
-            >
-              <Input.Password
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </Form.Item>
-            <Form.Item
-              label={<h4>Konfirmasi Password :</h4>}
-              name="confirmpassword"
-              dependencies={["password"]}
-              rules={[
-                ({ getFieldValue }) => ({
-                  validator(_, value) {
-                    if (!value || getFieldValue("password") === value) {
-                      return Promise.resolve();
-                    }
-                    return Promise.reject(
-                      new Error("The password that you entered do not match!")
-                    );
-                  },
-                }),
-              ]}
-            >
-              <Input.Password />
-            </Form.Item>
-            <Form.Item label={null} style={{ textAlign: "end", marginTop: 20 }}>
-              <Flex vertical gap="small" style={{ width: "100%" }}>
-                <Button type="primary" htmlType="submit">
-                  Daftar
-                </Button>
-              </Flex>
-            </Form.Item>
-            <p>
-              Sudah Punya Akun ? <a href="/login">Masuk</a>
-            </p>
-          </Form>
+              <Form.Item
+                label={<h4>Nama :</h4>}
+                name="nama"
+                style={{ marginBottom: 12 }}
+              >
+                <Input value={nama} onChange={(e) => setNama(e.target.value)} />
+              </Form.Item>
+              <Form.Item
+                label={<h4>Email (UMRAH) :</h4>}
+                name="email"
+                style={{ marginBottom: 12 }}
+              >
+                <Input
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </Form.Item>
+              <Form.Item
+                label={<h4>Password :</h4>}
+                name="password"
+                style={{ marginBottom: 12 }}
+              >
+                <Input.Password
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </Form.Item>
+              <Form.Item
+                label={<h4>Konfirmasi Password :</h4>}
+                name="confirmpassword"
+                dependencies={["password"]}
+                rules={[
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      if (!value || getFieldValue("password") === value) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject(
+                        new Error("The password that you entered do not match!")
+                      );
+                    },
+                  }),
+                ]}
+              >
+                <Input.Password />
+              </Form.Item>
+              <Form.Item
+                label={null}
+                style={{ textAlign: "end", marginTop: 20 }}
+              >
+                <Flex vertical gap="small" style={{ width: "100%" }}>
+                  <Button type="primary" htmlType="submit">
+                    Daftar
+                  </Button>
+                </Flex>
+              </Form.Item>
+              <p>
+                Sudah Punya Akun ? <a href="/login">Masuk</a>
+              </p>
+            </Form>
+          </Spin>
         </div>
       </div>
     </div>
