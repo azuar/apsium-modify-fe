@@ -33,16 +33,17 @@ const Register = () => {
       };
 
       const { data } = await axios.post(
-        `${LOCAL_URL}/api/users/login`,
+        `${LOCAL_URL}/api/users/register`,
         {
           email,
           password,
+          nama,
         },
         config
       );
 
-      localStorage.setItem("user", JSON.stringify(data));
-      navigate("/dashboard");
+      alert(`akun ${data.nama} berhasil di daftarkan!!`);
+      navigate("/login");
     } catch (error: any) {
       setError(error.response.data.message);
       console.log(error.response);
@@ -112,14 +113,23 @@ const Register = () => {
               />
             </Form.Item>
             <Form.Item
-              label={<h4>Confirm Password :</h4>}
-              name="confirm-password"
-              style={{ marginBottom: 12 }}
+              label={<h4>Konfirmasi Password :</h4>}
+              name="confirmpassword"
+              dependencies={["password"]}
+              rules={[
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (!value || getFieldValue("password") === value) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(
+                      new Error("The password that you entered do not match!")
+                    );
+                  },
+                }),
+              ]}
             >
-              <Input.Password
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
+              <Input.Password />
             </Form.Item>
             <Form.Item label={null} style={{ textAlign: "end", marginTop: 20 }}>
               <Flex vertical gap="small" style={{ width: "100%" }}>

@@ -101,7 +101,8 @@ const MainLayout: React.FC = () => {
       <Layout>
         <Content
           style={{
-            margin: "16px 16px",
+            marginInline: "30px",
+            marginBlock: "30px",
           }}
         >
           <Outlet />
