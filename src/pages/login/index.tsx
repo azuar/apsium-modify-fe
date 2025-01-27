@@ -10,7 +10,7 @@ const Login = () => {
     const user = localStorage.getItem("user");
 
     if (user) {
-      navigate("/home");
+      navigate("/dashboard");
     }
   }, [navigate]);
 

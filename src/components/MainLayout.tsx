@@ -33,6 +33,10 @@ function getItem(
   } as MenuItem;
 }
 
+const logout = () => {
+  localStorage.clear();
+};
+
 const items: MenuItem[] = [
   getItem(<Link to="/dashboard">Dashboard</Link>, "1", <PieChartOutlined />),
   getItem("Mahasiswa", "sub1", <UserOutlined />, [
@@ -51,12 +55,19 @@ const items: MenuItem[] = [
   ]),
   getItem("Settings", "sub2", <SettingOutlined />, [
     getItem("Ganti Password", "6", <HistoryOutlined />),
-    getItem("Logout", "7", <LogoutOutlined />),
+    getItem(
+      <Link to="/login" onClick={logout}>
+        Logout
+      </Link>,
+      "7",
+      <LogoutOutlined />
+    ),
   ]),
 ];
 
 const MainLayout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
+
   return (
     <Layout
       style={{
