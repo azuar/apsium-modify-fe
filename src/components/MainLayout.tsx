@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 
 import {
   ClusterOutlined,
@@ -11,10 +11,11 @@ import {
   HistoryOutlined,
   LogoutOutlined,
   TeamOutlined,
+  MenuUnfoldOutlined,
 } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import type { MenuProps } from "antd";
-import { Layout, Menu } from "antd";
+import { Layout, Menu, FloatButton } from "antd";
 
 const MainLayout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -22,6 +23,8 @@ const MainLayout: React.FC = () => {
 
   const user: any = localStorage.getItem("user");
   const userData = JSON.parse(user);
+
+  const navigate = useNavigate();
 
   type MenuItem = Required<MenuProps>["items"][number];
 
@@ -113,41 +116,67 @@ const MainLayout: React.FC = () => {
         minHeight: "100vh",
       }}
     >
-      <Sider
-        collapsible
-        collapsed={collapsed}
-        onCollapse={(value) => setCollapsed(value)}
-      >
-        <div style={{ textAlign: "center", padding: "20px" }}>
-          {collapsed ? (
-            <img
-              src="https://upload.wikimedia.org/wikipedia/id/9/96/Lambang_Universitas_Maritim_Raja_Ali_Haji.png"
-              alt=""
-              height={34}
-            />
-          ) : (
-            <div style={{ display: "flex", alignItems: "center" }}>
+      {window.innerWidth > 600 ? (
+        <Sider
+          collapsible
+          collapsed={collapsed}
+          onCollapse={(value) => setCollapsed(value)}
+        >
+          <div style={{ textAlign: "center", padding: "20px" }}>
+            {collapsed ? (
               <img
                 src="https://upload.wikimedia.org/wikipedia/id/9/96/Lambang_Universitas_Maritim_Raja_Ali_Haji.png"
                 alt=""
                 height={34}
-              />{" "}
-              <span
-                style={{ color: "white", fontSize: "20px", marginLeft: "10px" }}
-              >
-                APSIUM
-              </span>
-            </div>
-          )}
-        </div>
-        <Menu
-          theme="dark"
-          defaultSelectedKeys={["1"]}
-          defaultOpenKeys={["sub1", "sub2"]}
-          mode="inline"
-          items={items}
-        />
-      </Sider>
+              />
+            ) : (
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <img
+                  src="https://upload.wikimedia.org/wikipedia/id/9/96/Lambang_Universitas_Maritim_Raja_Ali_Haji.png"
+                  alt=""
+                  height={34}
+                />{" "}
+                <span
+                  style={{
+                    color: "white",
+                    fontSize: "20px",
+                    marginLeft: "10px",
+                  }}
+                >
+                  APSIUM
+                </span>
+              </div>
+            )}
+          </div>
+          <Menu
+            theme="dark"
+            defaultSelectedKeys={["1"]}
+            defaultOpenKeys={["sub1", "sub2"]}
+            mode="inline"
+            items={items}
+          />
+        </Sider>
+      ) : (
+        <>
+          <FloatButton.Group
+            trigger="click"
+            type="primary"
+            style={{ insetInlineEnd: 24 }}
+            icon={<MenuUnfoldOutlined />}
+          >
+            <FloatButton
+              icon={<PieChartOutlined />}
+              tooltip={<div>Dashboard</div>}
+              onClick={() => navigate("/dashboard")}
+            />
+            <FloatButton
+              icon={<UserOutlined />}
+              tooltip={<div>Profil</div>}
+              onClick={() => navigate("/profil")}
+            />
+          </FloatButton.Group>
+        </>
+      )}
       <Layout>
         <Content
           style={{

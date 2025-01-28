@@ -11,6 +11,7 @@ import CatSeminar from "../pages/cat-seminar";
 import CatSidang from "../pages/cat-sidang";
 import JudulSkripsi from "../pages/judul-skripsi";
 import Register from "../pages/register";
+import FormJudulSkripsi from "../pages/form-judul-skripsi";
 
 const Routes = () => {
   return (
@@ -25,6 +26,7 @@ const Routes = () => {
           <Route path="seminar" element={<CatSeminar />} />
           <Route path="sidang" element={<CatSidang />} />
           <Route path="judul-skripsi" element={<JudulSkripsi />} />
+          <Route path="judul-skripsi/add" element={<FormJudulSkripsi />} />
         </Route>
       </Switch>
     </Router>

@@ -71,10 +71,10 @@ const Profil = () => {
   };
   return (
     <div>
-      <h2 style={{ marginBottom: 20 }}>Profil</h2>
+      <h1 style={{ marginBottom: 20 }}>Profil</h1>
       <div
         style={{
-          padding: 24,
+          padding: 30,
           minHeight: 360,
           background: "white",
           borderRadius: 10,
