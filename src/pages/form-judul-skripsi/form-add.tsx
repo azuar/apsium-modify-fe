@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const FormJudulSkripsi = () => {
+const AddFormJudulSkripsi = () => {
   const LOCAL_URL = "http://localhost:4000";
 
   const [error, setError] = useState("");
@@ -56,6 +56,7 @@ const FormJudulSkripsi = () => {
     setError("");
 
     try {
+      setLoading(true);
       const config = {
         headers: {
           "Content-type": "application/json",
@@ -73,9 +74,11 @@ const FormJudulSkripsi = () => {
 
       await axios.post(`${LOCAL_URL}/api/skripsi/add`, bodyReq, config);
 
-      alert(`Judul Skripsi berhasil di update!!`);
+      alert(`Judul Skripsi berhasil ditambahkan!!`);
+      setLoading(false);
       navigate("/judul-skripsi");
     } catch (error: any) {
+      setLoading(false);
       setError(error.response.data.message);
       console.log(error.response);
     }
@@ -179,4 +182,4 @@ const FormJudulSkripsi = () => {
   );
 };
 
-export default FormJudulSkripsi;
+export default AddFormJudulSkripsi;

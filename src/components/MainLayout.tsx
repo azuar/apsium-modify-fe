@@ -141,6 +141,7 @@ const MainLayout: React.FC = () => {
                     color: "white",
                     fontSize: "20px",
                     marginLeft: "10px",
+                    fontWeight: 500,
                   }}
                 >
                   APSIUM

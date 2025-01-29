@@ -19,7 +19,7 @@ import {
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 
-const JudulSkripsi = () => {
+const Dosen = () => {
   const navigate = useNavigate();
   const LOCAL_URL = "http://localhost:4000";
   const [data, setData] = useState([]);
@@ -32,9 +32,9 @@ const JudulSkripsi = () => {
     setLoading(true);
     if (userData) {
       axios
-        .get(`${LOCAL_URL}/api/skripsi/user/${userData?.data?._id}`)
+        .get(`${LOCAL_URL}/api/dosen`)
         .then(({ data }) => {
-          setData(data.data);
+          setData(data);
           setLoading(false);
         })
         .catch((err) => {
@@ -54,7 +54,7 @@ const JudulSkripsi = () => {
       async onOk() {
         setLoading(true);
         await axios
-          .delete(`${LOCAL_URL}/api/skripsi/delete/${id}`)
+          .delete(`${LOCAL_URL}/api/dosen/delete/${id}`)
           .then((data) => {
             console.log(data);
             setLoading(false);
@@ -75,72 +75,31 @@ const JudulSkripsi = () => {
     {
       title: "No",
       key: "no",
+      width: 50,
       render: () => {
         return "1";
       },
-      fixed: "left",
     },
     {
-      title: "NIM",
-      key: "nim",
-      render: (data: any) => {
-        return data?.mahasiswa?.nim;
-      },
-      fixed: "left",
+      title: "NIP",
+      key: "nip",
+      dataIndex: "nip",
     },
     {
-      title: "Nama",
+      title: "Nama Dosen",
       key: "nama",
-      width: 200,
-      render: (data: any) => {
-        return data?.mahasiswa?.nama;
-      },
-      fixed: "left",
-    },
-    {
-      title: "Judul",
-      key: "judul",
-      dataIndex: "judul",
-      width: 500,
-    },
-    {
-      title: "Pembimbing 1",
-      key: "pembimbing1",
-      render: (data: any) => {
-        return data?.pembimbing1?.nama;
-      },
-    },
-    {
-      title: "Setuju Pemb. 1",
-      key: "setuju1",
-      render: (data: any) => {
-        return data?.setuju1 ? "Disetujui" : "Belum Disetujui";
-      },
-    },
-    {
-      title: "Pembimbing 2",
-      key: "pembimbing2",
-      render: (data: any) => {
-        return data?.pembimbing2?.nama;
-      },
-    },
-    {
-      title: "Setuju Pemb. 2",
-      key: "setuju2",
-      render: (data: any) => {
-        return data?.setuju1 ? "Disetujui" : "Belum Disetujui";
-      },
+      width: 400,
+      dataIndex: "nama",
     },
     {
       title: "Program Studi",
-      key: "programstudi",
-      render: (data: any) => {
-        return data?.mahasiswa?.program_study;
-      },
+      key: "program_studi",
+      dataIndex: "program_studi",
     },
     {
-      title: "Status",
+      title: "Total Mahasiswa",
       key: "status",
+      width: 100,
       render: () => {
         return "-";
       },
@@ -152,34 +111,23 @@ const JudulSkripsi = () => {
       render: (data: any) => {
         return (
           <>
-            {data?.setuju1 && data?.setuju2 && (
-              <Button
-                color="default"
-                variant="solid"
-                style={{ marginBottom: 5 }}
-              >
-                Ajukan Seminar
-              </Button>
-            )}
-            {!data?.status && (
-              <Flex gap="small">
-                <Tooltip title="edit">
-                  <Button
-                    type="primary"
-                    icon={<EditOutlined />}
-                    onClick={() => navigate(`/judul-skripsi/edit/${data?._id}`)}
-                  />
-                </Tooltip>
-                <Tooltip title="delete">
-                  <Button
-                    type="primary"
-                    danger
-                    icon={<DeleteOutlined />}
-                    onClick={() => showConfirm(data?._id)}
-                  />
-                </Tooltip>
-              </Flex>
-            )}
+            <Flex gap="small">
+              <Tooltip title="edit">
+                <Button
+                  type="primary"
+                  icon={<EditOutlined />}
+                  onClick={() => navigate(`/dosen/edit/${data?._id}`)}
+                />
+              </Tooltip>
+              <Tooltip title="delete">
+                <Button
+                  type="primary"
+                  danger
+                  icon={<DeleteOutlined />}
+                  onClick={() => showConfirm(data?._id)}
+                />
+              </Tooltip>
+            </Flex>
           </>
         );
       },
@@ -188,7 +136,7 @@ const JudulSkripsi = () => {
 
   return (
     <div>
-      <h1 style={{ marginBottom: 20 }}>Judul Skripsi</h1>
+      <h1 style={{ marginBottom: 20 }}>Dosen</h1>
       <div
         style={{
           padding: 30,
@@ -199,14 +147,14 @@ const JudulSkripsi = () => {
       >
         <Row style={{ marginBottom: 10 }}>
           <Col xs={24} md={12}>
-            <h3 style={{ marginBottom: 20 }}>Daftar Judul Skripsi</h3>
+            <h3 style={{ marginBottom: 20 }}>Daftar Dosen</h3>
           </Col>
           <Col xs={24} md={12} style={{ textAlign: "end" }}>
             <Button
               icon={<PlusOutlined />}
-              onClick={() => navigate("/judul-skripsi/add")}
+              onClick={() => navigate("/dosen/add")}
             >
-              Tambah Judul Skripsi
+              Tambah Dosen
             </Button>
           </Col>
         </Row>
@@ -223,4 +171,4 @@ const JudulSkripsi = () => {
   );
 };
 
-export default JudulSkripsi;
+export default Dosen;
