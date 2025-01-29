@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 
 import {
@@ -19,12 +19,18 @@ import { Layout, Menu, FloatButton } from "antd";
 
 const MainLayout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const [selected, setSelected] = useState(["1"]);
   const { Content, Footer, Sider } = Layout;
 
   const user: any = localStorage.getItem("user");
   const userData = JSON.parse(user);
 
   const navigate = useNavigate();
+
+  if (!userData) {
+    navigate("/login");
+    return;
+  }
 
   type MenuItem = Required<MenuProps>["items"][number];
 
@@ -110,6 +116,32 @@ const MainLayout: React.FC = () => {
       ),
     ]),
   ];
+
+  const setMenuActicve = () => {
+    const url = location.pathname;
+    const dataReturn: any = [];
+    items.map((x: any) => {
+      if (x.children) {
+        x.children.forEach((e: any) => {
+          dataReturn.push(e);
+        });
+      } else {
+        dataReturn.push(x);
+      }
+      return;
+    });
+    const activeMenu = dataReturn.filter((x: any) => {
+      if (x.label.props?.to == url) {
+        return x.key;
+      }
+    });
+    setSelected([activeMenu[0].key]);
+  };
+
+  useEffect(() => {
+    setMenuActicve();
+  }, []);
+
   return (
     <Layout
       style={{
@@ -151,10 +183,12 @@ const MainLayout: React.FC = () => {
           </div>
           <Menu
             theme="dark"
-            defaultSelectedKeys={["1"]}
+            defaultSelectedKeys={selected}
+            selectedKeys={selected}
             defaultOpenKeys={["sub1", "sub2"]}
             mode="inline"
             items={items}
+            onSelect={setMenuActicve}
           />
         </Sider>
       ) : (

@@ -38,6 +38,7 @@ const Routes = () => {
           <Route path="dosen/add" element={<AddFormDosen />} />
           <Route path="dosen/edit/:id" element={<AddFormDosen />} />
         </Route>
+        <Route path="*" element={<Dashboard />} />
       </Switch>
     </Router>
   );

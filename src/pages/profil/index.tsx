@@ -7,12 +7,7 @@ const Profil = () => {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState<boolean>(false);
-  const [formData, setFormData] = useState({
-    nim: "",
-    nama: "",
-    nohp: "",
-    program_study: "",
-  });
+  const [formData, setFormData] = useState<any>({});
 
   const dataUser: any = localStorage.getItem("user");
   const userData = JSON.parse(dataUser);
@@ -21,8 +16,12 @@ const Profil = () => {
     axios
       .get(`${LOCAL_URL}/api/users/${userData.data._id}`)
       .then(({ data }) => {
+        const form =
+          userData.data.role == "dosen"
+            ? { nip: data.data?.nip }
+            : { nim: data.data?.nim };
         const dataUpdate = {
-          nim: data.data?.nim,
+          ...form,
           nama: data.data?.nama,
           nohp: data.data?.nohp,
           program_study: data.data?.program_study,
@@ -91,7 +90,13 @@ const Profil = () => {
               label={<h4>Nomor Induk Mahasiswa :</h4>}
               style={{ marginBottom: 12 }}
             >
-              <Input name="nim" value={formData.nim} onChange={handleChange} />
+              <Input
+                name={userData?.data?.role == "dosen" ? "nip" : "nim"}
+                value={
+                  userData?.data?.role == "dosen" ? formData.nip : formData.nim
+                }
+                onChange={handleChange}
+              />
             </Form.Item>
             <Form.Item label={<h4>Nama :</h4>} style={{ marginBottom: 12 }}>
               <Input
