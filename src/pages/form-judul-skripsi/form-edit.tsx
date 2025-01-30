@@ -74,7 +74,6 @@ const EditFormJudulSkripsi = () => {
           "Content-type": "application/json",
         },
       };
-      debugger;
       const bodyReq = {
         judul: formData.judul,
         pembimbing1: formData.pembimbing1,

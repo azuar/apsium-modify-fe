@@ -1,4 +1,4 @@
-import { Form, Input, Button, Spin, Flex } from "antd";
+import { Form, Input, Button, Spin, Flex, Select } from "antd";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -8,13 +8,14 @@ const AddFormJudulSkripsi = () => {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState<boolean>(false);
-  const [formData, setFormData] = useState({
+  const [dosen, setDosen] = useState<any[]>([]);
+  const [formData, setFormData] = useState<any>({
     nim: "",
     nama: "",
     program_study: "",
     judul: "",
-    pembimbing1: "",
-    pembimbing2: "",
+    pembimbing1: {},
+    pembimbing2: {},
   });
 
   const navigate = useNavigate();
@@ -24,6 +25,17 @@ const AddFormJudulSkripsi = () => {
   useEffect(() => {
     setLoading(true);
     axios
+      .get(`${LOCAL_URL}/api/dosen`)
+      .then(({ data }) => {
+        setDosen(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setLoading(false);
+        setError("Gagal memuat data!");
+      });
+    axios
       .get(`${LOCAL_URL}/api/users/${userData.data._id}`)
       .then(({ data }) => {
         const dataUpdate = {
@@ -31,8 +43,8 @@ const AddFormJudulSkripsi = () => {
           nama: data.data?.nama,
           program_study: data.data?.program_study,
           judul: "",
-          pembimbing1: "",
-          pembimbing2: "",
+          pembimbing1: {},
+          pembimbing2: {},
         };
         setFormData(dataUpdate);
         setLoading(false);
@@ -48,6 +60,21 @@ const AddFormJudulSkripsi = () => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSelectChangeDosen1 = (e: any) => {
+    const value = dosen.filter((x) => x._id == e)[0];
+    setFormData({
+      ...formData,
+      ["pembimbing1"]: value,
+    });
+  };
+  const handleSelectChangeDosen2 = (e: any) => {
+    const value = dosen.filter((x) => x._id == e)[0];
+    setFormData({
+      ...formData,
+      ["pembimbing2"]: value,
     });
   };
 
@@ -145,20 +172,30 @@ const AddFormJudulSkripsi = () => {
               label={<h4>Pembimbing 1 :</h4>}
               style={{ marginBottom: 12 }}
             >
-              <Input
-                name="pembimbing1"
-                value={formData.pembimbing1}
-                onChange={handleChange}
+              <Select
+                showSearch
+                value={formData.pembimbing1?._id}
+                placeholder="Pilih Dosen Pembimbing 1"
+                onChange={handleSelectChangeDosen1}
+                options={(dosen || []).map((d) => ({
+                  value: d._id,
+                  label: d.nama,
+                }))}
               />
             </Form.Item>
             <Form.Item
               label={<h4>Pembimbing 2 :</h4>}
               style={{ marginBottom: 12 }}
             >
-              <Input
-                name="pembimbing2"
-                value={formData.pembimbing2}
-                onChange={handleChange}
+              <Select
+                showSearch
+                value={formData.pembimbing2?._id}
+                placeholder="Pilih Dosen Pembimbing 1"
+                onChange={handleSelectChangeDosen2}
+                options={(dosen || []).map((d) => ({
+                  value: d._id,
+                  label: d.nama,
+                }))}
               />
             </Form.Item>
             <Form.Item label={null} style={{ textAlign: "end", marginTop: 20 }}>

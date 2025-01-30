@@ -34,6 +34,9 @@ const Dosen = () => {
       axios
         .get(`${LOCAL_URL}/api/dosen`)
         .then(({ data }) => {
+          data.map((x: any, index: any) => {
+            x.no = index + 1;
+          });
           setData(data);
           setLoading(false);
         })
@@ -55,8 +58,7 @@ const Dosen = () => {
         setLoading(true);
         await axios
           .delete(`${LOCAL_URL}/api/dosen/delete/${id}`)
-          .then((data) => {
-            console.log(data);
+          .then(() => {
             setLoading(false);
             navigate(0);
           })
@@ -75,10 +77,8 @@ const Dosen = () => {
     {
       title: "No",
       key: "no",
+      dataIndex: "no",
       width: 50,
-      render: () => {
-        return "1";
-      },
     },
     {
       title: "NIP",

@@ -2,21 +2,16 @@ import {
   Table,
   Button,
   Spin,
-  Row,
-  Col,
   TableColumnsType,
   Tooltip,
   Flex,
   Modal,
-  Tabs,
-  TabsProps,
   Input,
   Form,
 } from "antd";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import {
-  PlusOutlined,
   EditOutlined,
   DeleteOutlined,
   ExclamationCircleFilled,
@@ -24,7 +19,7 @@ import {
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 
-const JudulSkripsi = () => {
+const TableSkripi = () => {
   const navigate = useNavigate();
   const LOCAL_URL = "http://localhost:4000";
   const [data, setData] = useState([]);
@@ -42,27 +37,29 @@ const JudulSkripsi = () => {
     setLoading(true);
     if (userData) {
       const endPoint =
-        userData.data.role === "dosen"
-          ? "skripsi"
-          : `skripsi/user/${userData?.data?._id}`;
+        userData.data.role === "mahasiswa"
+          ? `skripsi/user/${userData?.data?._id}`
+          : "skripsi";
       axios
         .get(`${LOCAL_URL}/api/${endPoint}`)
         .then(({ data }) => {
           if (userData.data.role === "dosen") {
-            const status =
-              key == "1"
-                ? "Permohonan_Seminar"
-                : key == "1"
-                ? "Disetujui_Pembimbing"
-                : "";
-            const newData = data.filter(
-              (e: any) =>
-                (e.pembimbing1.nip === userData.data.nip ||
-                  e.pembimbing2.nip === userData.data.nip) &&
-                e.status == status
-            );
-            newData.map((e: any, index: any) => {
-              e.no = index + 1;
+            const status = key == "1" ? "Permohonan_Seminar" : "";
+            const newData =
+              status === ""
+                ? data.filter(
+                    (e: any) =>
+                      (e.pembimbing1.nip === userData.data.nip ||
+                        e.pembimbing2.nip === userData.data.nip) &&
+                      e.status != "Permohonan_Seminar"
+                  )
+                : data.filter(
+                    (e: any) =>
+                      (e.pembimbing1.nip === userData.data.nip ||
+                        e.pembimbing2.nip === userData.data.nip) &&
+                      e.status == status
+                  );
+            newData.map((e: any) => {
               if (e.pembimbing1.nip === userData.data.nip) {
                 e.status_pembimbing = "pembimbing1";
                 e.persetujuan = e.setuju1 ? true : false;
@@ -72,10 +69,12 @@ const JudulSkripsi = () => {
               }
             });
             setData(newData);
+          } else if (userData.data.role === "admin") {
+            const newData = data.filter(
+              (e: any) => e.status == "Verifikasi_Seminar"
+            );
+            setData(newData);
           } else {
-            data.data.map((e: any, index: any) => {
-              e.no = index + 1;
-            });
             setData(data.data);
           }
           setLoading(false);
@@ -227,7 +226,9 @@ const JudulSkripsi = () => {
     {
       title: "No",
       key: "no",
-      dataIndex: "no",
+      render: () => {
+        return "1";
+      },
       fixed: "left",
     },
     {
@@ -365,88 +366,34 @@ const JudulSkripsi = () => {
                 Drive
               </Button>
             )}
+            {userData.data.role == "admin" && (
+              <Button
+                color="default"
+                variant="solid"
+                style={{ marginBottom: 5 }}
+                onClick={() => approved(data)}
+              >
+                Jadwalkan Seminar
+              </Button>
+            )}
           </>
         );
       },
     },
   ];
 
-  const tabsItems: TabsProps["items"] = [
-    {
-      key: "1",
-      label: "Permohonan Seminar",
-      children: (
-        <Table
-          columns={columns}
-          dataSource={data}
-          scroll={{ x: "max-content" }}
-          bordered={true}
-        />
-      ),
-    },
-    {
-      key: "2",
-      label: "Disetujui",
-      children: (
-        <Table
-          columns={columns}
-          dataSource={data}
-          scroll={{ x: "max-content" }}
-          bordered={true}
-        />
-      ),
-    },
-  ];
-
   return (
     <div>
-      <h1 style={{ marginBottom: 20 }}>Judul Skripsi</h1>
-      <div
-        style={{
-          padding: 30,
-          minHeight: 360,
-          background: "white",
-          borderRadius: 10,
-        }}
-      >
-        <Row>
-          <Col xs={24} md={12}>
-            <h3 style={{ marginBottom: 20 }}>Daftar Judul Skripsi</h3>
-          </Col>
-          {userData?.data?.role === "mahasiswa" && (
-            <Col xs={24} md={12} style={{ textAlign: "end" }}>
-              <Button
-                icon={<PlusOutlined />}
-                onClick={() => navigate("/judul-skripsi/add")}
-                style={{ marginBottom: 20 }}
-              >
-                Tambah Judul Skripsi
-              </Button>
-            </Col>
-          )}
-        </Row>
-        <Spin spinning={loading}>
-          {userData?.data?.role === "mahasiswa" && (
-            <Table
-              columns={columns}
-              dataSource={data}
-              scroll={{ x: "max-content" }}
-              bordered={true}
-            />
-          )}
-          {userData?.data?.role === "dosen" && (
-            <Tabs
-              defaultActiveKey="1"
-              items={tabsItems}
-              onChange={(key: string) => {
-                getData(key);
-              }}
-            />
-          )}
-        </Spin>
-      </div>
+      <Spin spinning={loading}>
+        <Table
+          columns={columns}
+          dataSource={data}
+          scroll={{ x: "max-content" }}
+          bordered={true}
+        />
+      </Spin>
     </div>
   );
 };
 
-export default JudulSkripsi;
+export default TableSkripi;
