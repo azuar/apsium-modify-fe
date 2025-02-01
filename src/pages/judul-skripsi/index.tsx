@@ -23,72 +23,33 @@ import {
   FileProtectOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import getData from "../../utils/shared/SharedFunction";
+import TableComponent from "../../components/TableComponent";
 
 const JudulSkripsi = () => {
   const navigate = useNavigate();
   const LOCAL_URL = "https://apsium-modify-be.vercel.app";
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
-  // const [link, setLink] = useState("");
   const dataUser: any = localStorage.getItem("user");
   const userData = JSON.parse(dataUser);
   const { confirm } = Modal;
 
-  useEffect(() => {
-    getData();
-  }, []);
-
-  const getData = (key: any = "1") => {
+  const ResultData = (key: any = "1") => {
     setLoading(true);
-    if (userData) {
-      const endPoint =
-        userData.data.role === "dosen"
-          ? "skripsi"
-          : `skripsi/user/${userData?.data?._id}`;
-      axios
-        .get(`${LOCAL_URL}/api/${endPoint}`)
-        .then(({ data }) => {
-          if (userData.data.role === "dosen") {
-            const status = key == "1" ? "Permohonan_Seminar" : "";
-            const newData =
-              status === ""
-                ? data.filter(
-                    (e: any) =>
-                      (e.pembimbing1.nip === userData.data.nip ||
-                        e.pembimbing2.nip === userData.data.nip) &&
-                      e.status != "Permohonan_Seminar"
-                  )
-                : data.filter(
-                    (e: any) =>
-                      (e.pembimbing1.nip === userData.data.nip ||
-                        e.pembimbing2.nip === userData.data.nip) &&
-                      e.status == status
-                  );
-            newData.map((e: any, index: any) => {
-              e.no = index + 1;
-              if (e.pembimbing1.nip === userData.data.nip) {
-                e.status_pembimbing = "pembimbing1";
-                e.persetujuan = e.setuju1 ? true : false;
-              } else {
-                e.status_pembimbing = "pembimbing2";
-                e.persetujuan = e.setuju2 ? true : false;
-              }
-            });
-            setData(newData);
-          } else {
-            data.data.map((e: any, index: any) => {
-              e.no = index + 1;
-            });
-            setData(data.data);
-          }
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.log(err);
-          setLoading(false);
-        });
-    }
+    let dataSkripsi = getData(key);
+    dataSkripsi?.then((result) => {
+      result.map((x: any, index: any) => {
+        x.no = index + 1;
+      });
+      setData(result);
+      setLoading(false);
+    });
   };
+
+  useEffect(() => {
+    ResultData();
+  }, []);
 
   const showConfirm = (id: any) => {
     confirm({
@@ -104,7 +65,7 @@ const JudulSkripsi = () => {
           .then(() => {
             console.log();
             setLoading(false);
-            getData();
+            ResultData();
           })
           .catch((err) => {
             setLoading(false);
@@ -158,12 +119,11 @@ const JudulSkripsi = () => {
             status: status,
           };
         }
-        debugger;
         await axios
           .put(`${LOCAL_URL}/api/skripsi/update/${id}`, body)
           .then(() => {
             setLoading(false);
-            getData();
+            ResultData();
           })
           .catch((err) => {
             setLoading(false);
@@ -213,7 +173,7 @@ const JudulSkripsi = () => {
           .put(`${LOCAL_URL}/api/skripsi/update/${data._id}`, body)
           .then(() => {
             setLoading(false);
-            getData();
+            ResultData();
           })
           .catch((err) => {
             setLoading(false);
@@ -430,19 +390,14 @@ const JudulSkripsi = () => {
         </Row>
         <Spin spinning={loading}>
           {userData?.data?.role === "mahasiswa" && (
-            <Table
-              columns={columns}
-              dataSource={data}
-              scroll={{ x: "max-content" }}
-              bordered={true}
-            />
+            <TableComponent columns={columns} dataSource={data} />
           )}
           {userData?.data?.role === "dosen" && (
             <Tabs
               defaultActiveKey="1"
               items={tabsItems}
               onChange={(key: string) => {
-                getData(key);
+                ResultData(key);
               }}
             />
           )}

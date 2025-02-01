@@ -1,8 +1,7 @@
-import { Table, Button, Tabs, TabsProps, Modal } from "antd";
+import { Table, Button, Tabs, TabsProps, Modal, Spin } from "antd";
 import { useEffect, useState } from "react";
 import getData from "../../utils/shared/SharedFunction";
-import ModalSkripsi from "../../components/ModalSkripsi";
-import { AuditOutlined } from "@ant-design/icons";
+import ModalSkripsi from "../../components/ModalComponent";
 import dayjs from "dayjs";
 
 const CatSeminar = () => {
@@ -11,25 +10,44 @@ const CatSeminar = () => {
 
   const [data, setData] = useState([]);
   const [activeKey, setActiveKey] = useState("1");
+  const [loading, setLoading] = useState(false);
 
   const { confirm } = Modal;
 
   const jadwalkanSeminar = (id: any) => {
     confirm({
-      title: "Jadwalkan Seminar",
       content: <ModalSkripsi id={id} />,
-      icon: <AuditOutlined />,
+      icon: null,
       footer: null,
       width: 500,
       afterClose: () => {
-        let dataSkripsi = getData();
-        dataSkripsi?.then((result) => {
-          result.map((x: any, index: any) => {
-            x.no = index + 1;
-          });
-          setData(result);
-        });
+        resultData();
       },
+    });
+  };
+
+  const resultData = (key: any = "1") => {
+    setLoading(true);
+    let dataSkripsi = getData(key);
+    dataSkripsi?.then((result) => {
+      result.map((x: any, index: any) => {
+        x.no = index + 1;
+      });
+      let filterData;
+      if (userData.data.role !== "admin") {
+        setActiveKey("2");
+        filterData = result.filter(
+          (e: any) =>
+            e.status === "Terjadwal_Seminar" ||
+            e.status === "Revisi_Seminar" ||
+            e.status === "Selesai Seminar"
+        );
+        setData(filterData);
+        setLoading(false);
+      } else {
+        setData(result);
+        setLoading(false);
+      }
     });
   };
 
@@ -204,25 +222,7 @@ const CatSeminar = () => {
   ];
 
   useEffect(() => {
-    let dataSkripsi = getData();
-    dataSkripsi?.then((result) => {
-      result.map((x: any, index: any) => {
-        x.no = index + 1;
-      });
-      let filterData;
-      if (userData.data.role !== "admin") {
-        setActiveKey("2");
-        filterData = result.filter(
-          (e: any) =>
-            e.status === "Terjadwal_Seminar" ||
-            e.status === "Revisi_Seminar" ||
-            e.status === "Selesai Seminar"
-        );
-        setData(filterData);
-      } else {
-        setData(result);
-      }
-    });
+    resultData();
   }, []);
 
   return (
@@ -245,22 +245,18 @@ const CatSeminar = () => {
             items={tabsItems}
             onChange={(key) => {
               setActiveKey(key);
-              let dataSkripsi = getData(key);
-              dataSkripsi?.then((result) => {
-                result.map((x: any, index: any) => {
-                  x.no = index + 1;
-                });
-                setData(result);
-              });
+              resultData(key);
             }}
           />
         )}
-        <Table
-          columns={columns}
-          dataSource={data}
-          scroll={{ x: "max-content" }}
-          bordered={true}
-        />
+        <Spin spinning={loading}>
+          <Table
+            columns={columns}
+            dataSource={data}
+            scroll={{ x: "max-content" }}
+            bordered={true}
+          />
+        </Spin>
       </div>
     </div>
   );

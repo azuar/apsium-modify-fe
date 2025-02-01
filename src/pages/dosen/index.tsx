@@ -94,7 +94,7 @@ const Dosen = () => {
     {
       title: "Program Studi",
       key: "program_studi",
-      dataIndex: "program_studi",
+      dataIndex: "program_study",
     },
     {
       title: "Total Mahasiswa",

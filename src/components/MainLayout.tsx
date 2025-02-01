@@ -135,7 +135,7 @@ const MainLayout: React.FC = () => {
         return x.key;
       }
     });
-    setSelected([activeMenu[0].key]);
+    setSelected([activeMenu[0]?.key]);
   };
 
   useEffect(() => {
