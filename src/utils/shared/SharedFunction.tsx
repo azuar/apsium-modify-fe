@@ -14,7 +14,7 @@ export default function getData(key: any = "1") {
       .then(({ data }) => {
         if (userData.data.role === "dosen") {
           let newData: any = [];
-          if (location.pathname.includes("judul-skripsi")) {
+          if (location.pathname.includes("proposal")) {
             const status = key == "1" ? "Permohonan_Seminar" : "";
             newData =
               status === ""

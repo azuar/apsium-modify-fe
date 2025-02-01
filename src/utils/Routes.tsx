@@ -9,9 +9,9 @@ import Dashboard from "../pages/dashboard";
 import Profil from "../pages/profil";
 import CatSeminar from "../pages/cat-seminar";
 import CatSidang from "../pages/cat-sidang";
-import JudulSkripsi from "../pages/judul-skripsi";
+import ProposalSkripsi from "../pages/proposal";
 import Register from "../pages/register";
-import FormJudulSkripsi from "../pages/form-judul-skripsi";
+import FormProposal from "../pages/form-proposal";
 import Dosen from "../pages/dosen";
 import AddFormDosen from "../pages/form-dosen";
 
@@ -28,9 +28,9 @@ const Routes = () => {
           <Route path="seminar" element={<CatSeminar />} />
           <Route path="sidang" element={<CatSidang />} />
           <Route path="dosen" element={<Dosen />} />
-          <Route path="judul-skripsi" element={<JudulSkripsi />} />
-          <Route path="judul-skripsi/add" element={<FormJudulSkripsi />} />
-          <Route path="judul-skripsi/edit/:id" element={<FormJudulSkripsi />} />
+          <Route path="proposal" element={<ProposalSkripsi />} />
+          <Route path="proposal/add" element={<FormProposal />} />
+          <Route path="proposal/edit/:id" element={<FormProposal />} />
           <Route path="dosen/add" element={<AddFormDosen />} />
           <Route path="dosen/edit/:id" element={<AddFormDosen />} />
         </Route>

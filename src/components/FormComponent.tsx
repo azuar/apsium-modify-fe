@@ -69,21 +69,13 @@ const FormComponent = (data: any) => {
       };
       let bodyReq = formData;
       delete bodyReq._id;
+      if (data?.status) {
+        bodyReq.status = data?.status;
+      }
       if (data?.user_id) {
         bodyReq.user_id = data?.user_id;
       }
-      if (data?.title === "Jadwalkan Seminar") {
-        bodyReq.status = "Terjadwal_Seminar";
-      }
       if (data?.id) {
-        if (location.pathname.includes("judul-skripsi")) {
-          bodyReq = {
-            judul: formData.judul,
-            pembimbing1: formData.pembimbing1,
-            pembimbing2: formData.pembimbing2,
-          };
-        }
-        debugger;
         await axios.put(
           `${LOCAL_URL}/api/${data?.endPoint}/update/${data?.id}`,
           bodyReq,

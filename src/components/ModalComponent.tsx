@@ -76,6 +76,7 @@ const ModalSkripsi = (data: any) => {
       form={form}
       button={button}
       formType={"modal"}
+      status={"Terjadwal_Seminar"}
       successMessage={"Skripsi berhasil dijadwalkan untuk seminar"}
     />
   );

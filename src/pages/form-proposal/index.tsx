@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import FormComponent from "../../components/FormComponent";
 import { getOptionData } from "../../utils/shared/SharedFunction";
 
-const FormJudulSkripsi = () => {
+const FormProposal = () => {
   const dataUser: any = localStorage.getItem("user");
   const userData = JSON.parse(dataUser);
   const params = useParams();
@@ -27,7 +27,7 @@ const FormJudulSkripsi = () => {
 
   const form = [
     {
-      label: "Judul Skripsi",
+      label: "Judul Proposal Skripsi",
       name: "judul",
       type: "input",
     },
@@ -60,13 +60,13 @@ const FormJudulSkripsi = () => {
     <FormComponent
       endPoint={"skripsi"}
       id={id ?? undefined}
-      title="Judul Skripsi"
+      title="Proposal Skripsi"
       form={form}
-      navigate="/judul-skripsi"
+      navigate="/proposal"
       button={button}
-      user_id={id ? userData?.data?._id : null}
+      user_id={id ? null : userData?.data?._id}
     />
   );
 };
 
-export default FormJudulSkripsi;
+export default FormProposal;

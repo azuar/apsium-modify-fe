@@ -7,13 +7,10 @@ import {
   TableColumnsType,
   Tooltip,
   Flex,
-  Modal,
   Tabs,
   TabsProps,
-  Input,
-  Form,
+  Modal,
 } from "antd";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import {
   PlusOutlined,
@@ -25,14 +22,16 @@ import {
 import { useNavigate } from "react-router-dom";
 import getData from "../../utils/shared/SharedFunction";
 import TableComponent from "../../components/TableComponent";
+import showConfirm from "../../utils/shared/confirmFuction";
+import FormComponent from "../../components/FormComponent";
 
-const JudulSkripsi = () => {
+const ProposalSkripsi = () => {
   const navigate = useNavigate();
-  const LOCAL_URL = "https://apsium-modify-be.vercel.app";
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const dataUser: any = localStorage.getItem("user");
   const userData = JSON.parse(dataUser);
+
   const { confirm } = Modal;
 
   const ResultData = (key: any = "1") => {
@@ -51,139 +50,84 @@ const JudulSkripsi = () => {
     ResultData();
   }, []);
 
-  const showConfirm = (id: any) => {
-    confirm({
-      title: "Apakah Anda ingin menghapus item ini??",
-      icon: <ExclamationCircleFilled />,
-      okButtonProps: {
-        disabled: loading,
+  const confirmUpdate = (id: any, _status: any) => {
+    const form = [
+      {
+        label: "Link Drive Berkas",
+        name: "berkas_seminar",
+        type: "input",
       },
-      async onOk() {
-        setLoading(true);
-        await axios
-          .delete(`${LOCAL_URL}/api/skripsi/delete/${id}`)
-          .then(() => {
-            console.log();
-            setLoading(false);
-            ResultData();
-          })
-          .catch((err) => {
-            setLoading(false);
-            console.log(err);
-          });
-      },
-      onCancel() {
-        console.log("Cancel");
-      },
-    });
-  };
+    ];
 
-  const confirmUpdate = (id: any, status: any) => {
-    let link = "";
-    const content =
-      status === "Permohonan_Seminar" ? (
-        "Judul tidak bisa diperbaharui setelah status diubah!!!"
-      ) : (
-        <Form.Item
-          label={<h5>Link Drive Berkas </h5>}
-          style={{ marginBottom: 12, marginTop: 12 }}
-        >
-          <Input
-            name="link"
-            placeholder="Masukan link drive berkas anda!!"
-            onChange={(e) => {
-              link = e.target.value;
-            }}
-          />
-        </Form.Item>
-      );
+    const button = [
+      {
+        label: "Batal",
+        type: "cancel",
+      },
+      {
+        label: "Ajukan Seminar",
+        type: "submit",
+      },
+    ];
 
     confirm({
-      title: `Apakah anda yakin ingin mengupdate status ke ${status}?`,
-      content: content,
-      icon: <ExclamationCircleFilled />,
-      width: 600,
-      okButtonProps: {
-        disabled: loading,
-      },
-      async onOk() {
-        setLoading(true);
-        let body = new Object();
-        if (status === "Permohonan_Seminar") {
-          body = {
-            status: status,
-          };
-        } else {
-          body = {
-            drive: link,
-            status: status,
-          };
-        }
-        await axios
-          .put(`${LOCAL_URL}/api/skripsi/update/${id}`, body)
-          .then(() => {
-            setLoading(false);
-            ResultData();
-          })
-          .catch((err) => {
-            setLoading(false);
-            console.log(err);
-          });
-      },
-      onCancel() {
-        console.log("Cancel");
+      content: (
+        <FormComponent
+          endPoint={"skripsi"}
+          id={id}
+          title="Pengajuan Seminar"
+          form={form}
+          button={button}
+          formType={"modal"}
+          status={"Verifikasi_Seminar"}
+          successMessage={"Pengajuan Berhasil Dirikirim!!"}
+        />
+      ),
+      icon: null,
+      footer: null,
+      width: 500,
+      afterClose: () => {
+        ResultData();
       },
     });
   };
 
   const approved = (data: any) => {
-    confirm({
-      title: "Apakah anda yakin ingin menyetujui judul berikut?",
-      icon: <ExclamationCircleFilled />,
-      okButtonProps: {
-        disabled: loading,
-      },
-      async onOk() {
-        setLoading(true);
-        let body = new Object();
-        if (data.status_pembimbing == "pembimbing2") {
-          if (data.setuju1) {
-            body = {
-              setuju2: true,
-              status: "Disetujui_Pembimbing",
-            };
-          } else {
-            body = {
-              setuju2: true,
-            };
-          }
-        } else {
-          if (data.setuju2) {
-            body = {
-              setuju1: true,
-              status: "Disetujui_Pembimbing",
-            };
-          } else {
-            body = {
-              setuju1: true,
-            };
-          }
-        }
-        await axios
-          .put(`${LOCAL_URL}/api/skripsi/update/${data._id}`, body)
-          .then(() => {
-            setLoading(false);
-            ResultData();
-          })
-          .catch((err) => {
-            setLoading(false);
-            console.log(err);
-          });
-      },
-      onCancel() {
-        console.log("Cancel");
-      },
-    });
+    let body = new Object();
+    if (data.status_pembimbing == "pembimbing2") {
+      if (data.setuju1) {
+        body = {
+          setuju2: true,
+          status: "Disetujui_Pembimbing",
+        };
+      } else {
+        body = {
+          setuju2: true,
+        };
+      }
+    } else {
+      if (data.setuju2) {
+        body = {
+          setuju1: true,
+          status: "Disetujui_Pembimbing",
+        };
+      } else {
+        body = {
+          setuju1: true,
+        };
+      }
+    }
+    showConfirm(
+      "Apakah anda yakin ingin menyetujui judul berikut?",
+      <ExclamationCircleFilled />,
+      "skripsi/update",
+      data._id,
+      loading,
+      setLoading,
+      ResultData,
+      null,
+      body
+    );
   };
 
   const columns: TableColumnsType<any> = [
@@ -211,7 +155,7 @@ const JudulSkripsi = () => {
       fixed: "left",
     },
     {
-      title: "Judul",
+      title: "Judul Skripsi",
       key: "judul",
       dataIndex: "judul",
       width: 500,
@@ -283,9 +227,7 @@ const JudulSkripsi = () => {
                     <Button
                       type="primary"
                       icon={<EditOutlined />}
-                      onClick={() =>
-                        navigate(`/judul-skripsi/edit/${data?._id}`)
-                      }
+                      onClick={() => navigate(`/proposal/edit/${data?._id}`)}
                     />
                   </Tooltip>
                   <Tooltip title="Hapus">
@@ -293,7 +235,17 @@ const JudulSkripsi = () => {
                       type="primary"
                       danger
                       icon={<DeleteOutlined />}
-                      onClick={() => showConfirm(data?._id)}
+                      onClick={() =>
+                        showConfirm(
+                          "Apakah Anda ingin menghapus item ini??",
+                          <ExclamationCircleFilled />,
+                          "skripsi/delete",
+                          data?._id,
+                          loading,
+                          setLoading,
+                          ResultData
+                        )
+                      }
                     />
                   </Tooltip>
                   <Tooltip
@@ -304,7 +256,20 @@ const JudulSkripsi = () => {
                       type="default"
                       icon={<FileProtectOutlined />}
                       onClick={() =>
-                        confirmUpdate(data?._id, "Permohonan_Seminar")
+                        showConfirm(
+                          `Apakah anda yakin ingin mengajukan permohonan seminar?`,
+                          <ExclamationCircleFilled />,
+                          "skripsi/update",
+                          data?._id,
+                          loading,
+                          setLoading,
+                          ResultData,
+                          "Judul tidak bisa diperbaharui setelah status diubah!!!",
+                          {
+                            status: "Permohonan_Seminar",
+                          },
+                          600
+                        )
                       }
                     />
                   </Tooltip>
@@ -363,7 +328,7 @@ const JudulSkripsi = () => {
 
   return (
     <div>
-      <h1 style={{ marginBottom: 20 }}>Judul Skripsi</h1>
+      <h1 style={{ marginBottom: 20 }}>Proposal Skripsi</h1>
       <div
         style={{
           padding: 30,
@@ -374,16 +339,16 @@ const JudulSkripsi = () => {
       >
         <Row>
           <Col xs={24} md={12}>
-            <h3 style={{ marginBottom: 20 }}>Daftar Judul Skripsi</h3>
+            <h3 style={{ marginBottom: 20 }}>Daftar Proposal Skripsi</h3>
           </Col>
           {userData?.data?.role === "mahasiswa" && (
             <Col xs={24} md={12} style={{ textAlign: "end" }}>
               <Button
                 icon={<PlusOutlined />}
-                onClick={() => navigate("/judul-skripsi/add")}
+                onClick={() => navigate("/proposal/add")}
                 style={{ marginBottom: 20 }}
               >
-                Tambah Judul Skripsi
+                Tambah Proposal
               </Button>
             </Col>
           )}
@@ -407,4 +372,4 @@ const JudulSkripsi = () => {
   );
 };
 
-export default JudulSkripsi;
+export default ProposalSkripsi;
