@@ -21,7 +21,7 @@ import { useNavigate } from "react-router-dom";
 
 const TableSkripi = () => {
   const navigate = useNavigate();
-  const LOCAL_URL = "http://localhost:4000";
+  const LOCAL_URL = "https://apsium-modify-be.vercel.app";
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   // const [link, setLink] = useState("");

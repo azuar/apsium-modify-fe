@@ -20,7 +20,7 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const LOCAL_URL = "http://localhost:4000";
+  const LOCAL_URL = "https://apsium-modify-be.vercel.app";
 
   const submitHandler = async (e: any) => {
     e.preventDefault();

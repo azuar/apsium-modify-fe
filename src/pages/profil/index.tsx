@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 const Profil = () => {
-  const LOCAL_URL = "http://localhost:4000";
+  const LOCAL_URL = "https://apsium-modify-be.vercel.app";
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState<boolean>(false);

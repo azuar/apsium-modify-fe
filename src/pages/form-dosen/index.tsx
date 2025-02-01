@@ -4,7 +4,7 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 
 const AddFormDosen = () => {
-  const LOCAL_URL = "http://localhost:4000";
+  const LOCAL_URL = "https://apsium-modify-be.vercel.app";
 
   const params = useParams();
   const id = params.id;

@@ -26,7 +26,7 @@ import { useNavigate } from "react-router-dom";
 
 const JudulSkripsi = () => {
   const navigate = useNavigate();
-  const LOCAL_URL = "http://localhost:4000";
+  const LOCAL_URL = "https://apsium-modify-be.vercel.app";
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   // const [link, setLink] = useState("");
@@ -49,18 +49,21 @@ const JudulSkripsi = () => {
         .get(`${LOCAL_URL}/api/${endPoint}`)
         .then(({ data }) => {
           if (userData.data.role === "dosen") {
-            const status =
-              key == "1"
-                ? "Permohonan_Seminar"
-                : key == "1"
-                ? "Disetujui_Pembimbing"
-                : "";
-            const newData = data.filter(
-              (e: any) =>
-                (e.pembimbing1.nip === userData.data.nip ||
-                  e.pembimbing2.nip === userData.data.nip) &&
-                e.status == status
-            );
+            const status = key == "1" ? "Permohonan_Seminar" : "";
+            const newData =
+              status === ""
+                ? data.filter(
+                    (e: any) =>
+                      (e.pembimbing1.nip === userData.data.nip ||
+                        e.pembimbing2.nip === userData.data.nip) &&
+                      e.status != "Permohonan_Seminar"
+                  )
+                : data.filter(
+                    (e: any) =>
+                      (e.pembimbing1.nip === userData.data.nip ||
+                        e.pembimbing2.nip === userData.data.nip) &&
+                      e.status == status
+                  );
             newData.map((e: any, index: any) => {
               e.no = index + 1;
               if (e.pembimbing1.nip === userData.data.nip) {

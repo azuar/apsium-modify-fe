@@ -15,7 +15,7 @@ import { RangePickerProps } from "antd/es/date-picker";
 import dayjs from "dayjs";
 
 const ModalSkripsi = (data: any) => {
-  const LOCAL_URL = "http://localhost:4000";
+  const LOCAL_URL = "https://apsium-modify-be.vercel.app";
   const [api, _contextHolder] = notification.useNotification();
   const [loading, setLoading] = useState<boolean>(false);
   const [dosen, setDosen] = useState<any[]>([]);
