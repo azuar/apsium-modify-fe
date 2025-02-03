@@ -58,7 +58,7 @@ const MainLayout: React.FC = () => {
       ? getItem("Mahasiswa", "sub1", <UserOutlined />, [
           getItem(<Link to="/profil">Profil</Link>, "2", <UserOutlined />),
           getItem(
-            <Link to="/proposal">Proposal</Link>,
+            <Link to="/skripsi">Judul Skripsi</Link>,
             "3",
             <ClusterOutlined />
           ),
@@ -77,7 +77,7 @@ const MainLayout: React.FC = () => {
       ? getItem("Dosen", "sub1", <UserOutlined />, [
           getItem(<Link to="/profil">Profil</Link>, "2", <UserOutlined />),
           getItem(
-            <Link to="/proposal">Proposal</Link>,
+            <Link to="/skripsi">Judul Skripsi</Link>,
             "3",
             <ClusterOutlined />
           ),

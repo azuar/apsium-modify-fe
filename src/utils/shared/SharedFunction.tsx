@@ -14,22 +14,23 @@ export default function getData(key: any = "1") {
       .then(({ data }) => {
         if (userData.data.role === "dosen") {
           let newData: any = [];
-          if (location.pathname.includes("proposal")) {
-            const status = key == "1" ? "Permohonan_Seminar" : "";
-            newData =
-              status === ""
-                ? data.filter(
-                    (e: any) =>
-                      (e.pembimbing1.nip === userData.data.nip ||
-                        e.pembimbing2.nip === userData.data.nip) &&
-                      e.status != "Permohonan_Seminar"
-                  )
-                : data.filter(
-                    (e: any) =>
-                      (e.pembimbing1.nip === userData.data.nip ||
-                        e.pembimbing2.nip === userData.data.nip) &&
-                      e.status == status
-                  );
+          if (location.pathname.includes("skripsi")) {
+            const status =
+              key == "1"
+                ? "Permohonan_Seminar"
+                : key == "2"
+                ? "Seminar"
+                : key == "3"
+                ? "Permohonan_Sidang"
+                : key == "4"
+                ? "Sidang"
+                : "Selesai";
+            newData = data.filter(
+              (e: any) =>
+                (e.pembimbing1.nip === userData.data.nip ||
+                  e.pembimbing2.nip === userData.data.nip) &&
+                e.status.includes(status)
+            );
             newData.map((e: any, index: any) => {
               e.no = index + 1;
               if (e.pembimbing1.nip === userData.data.nip) {

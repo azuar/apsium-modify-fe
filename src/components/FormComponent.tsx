@@ -17,7 +17,7 @@ import { useNavigate } from "react-router-dom";
 const FormComponent = (data: any) => {
   const LOCAL_URL = "https://apsium-modify-be.vercel.app";
   const [formData, setFormData] = useState<any>({});
-  const [error, setError] = useState("");
+  const [error, setError] = useState(false);
   const [loading, setLoading] = useState<boolean>(false);
   let navigate: any;
   if (data.navigate) {
@@ -37,17 +37,44 @@ const FormComponent = (data: any) => {
         .catch((err) => {
           console.log(err);
           setLoading(false);
-          setError("Gagal memuat data!");
+          message.error("Gagal memuat data!");
         });
     }
   }, []);
 
   const handleSelectChange = (e: any, label: any, optionsData: any[]) => {
+    setError(false);
     const value = optionsData.find((x: any) => x._id === e);
-    setFormData({
-      ...formData,
-      [label]: value,
-    });
+    if (
+      (label === "pembimbing1" && formData["pembimbing2"]?._id === e) ||
+      (label === "pembimbing2" && formData["pembimbing1"]?._id === e)
+    ) {
+      setFormData({
+        ...formData,
+        [label]: "",
+      });
+      message.error("Pembimbing 1 dan Pembimbing 2 tidak boleh sama");
+      setError(true);
+    } else if (
+      (label === "penguji1" &&
+        (formData["penguji2"]?._id === e || formData["penguji3"]?._id === e)) ||
+      (label === "penguji2" &&
+        (formData["penguji1"]?._id === e || formData["penguji3"]?._id === e)) ||
+      (label === "penguji3" && formData["penguji1"]?._id === e) ||
+      formData["penguji2"]?._id === e
+    ) {
+      setFormData({
+        ...formData,
+        [label]: "",
+      });
+      message.error("Penguji 1, Penguji 2 dan Penguji 3 tidak boleh sama");
+      setError(true);
+    } else {
+      setFormData({
+        ...formData,
+        [label]: value,
+      });
+    }
   };
 
   const handleInputChange = (e: any) => {
@@ -59,7 +86,7 @@ const FormComponent = (data: any) => {
 
   const submitHandler = async (e: any) => {
     e.preventDefault();
-    setError("");
+    setError(false);
     try {
       setLoading(true);
       const config = {
@@ -103,8 +130,8 @@ const FormComponent = (data: any) => {
       }
     } catch (error: any) {
       setLoading(false);
-      setError(error.response?.data?.message || "Terjadi kesalahan.");
-      console.log(error.response);
+      setError(true);
+      message.error(error.response?.data?.message);
     }
   };
 
@@ -130,7 +157,6 @@ const FormComponent = (data: any) => {
         }
       >
         <Spin spinning={loading}>
-          <p style={{ color: "red" }}>{error}</p>
           <Form
             name="layout-multiple-vertical"
             style={{ marginTop: 20 }}
@@ -155,6 +181,7 @@ const FormComponent = (data: any) => {
                     showSearch
                     value={formData[element.name]?._id || undefined}
                     placeholder={element.placeholder}
+                    id={element.name}
                     onChange={(e) =>
                       handleSelectChange(e, element.name, element.options)
                     }
@@ -193,7 +220,7 @@ const FormComponent = (data: any) => {
               <Flex gap="small" wrap justify="end">
                 {data?.button?.map((element: any) =>
                   element.type === "submit" ? (
-                    <Button type="primary" htmlType="submit">
+                    <Button type="primary" htmlType="submit" disabled={error}>
                       {element.label}
                     </Button>
                   ) : (

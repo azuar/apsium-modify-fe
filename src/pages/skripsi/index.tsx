@@ -25,7 +25,7 @@ import TableComponent from "../../components/TableComponent";
 import showConfirm from "../../utils/shared/confirmFuction";
 import FormComponent from "../../components/FormComponent";
 
-const ProposalSkripsi = () => {
+const JudulSkripsi = () => {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -209,7 +209,7 @@ const ProposalSkripsi = () => {
       render: (data: any) => {
         return (
           <>
-            {data?.status == "Disetujui_Pembimbing" &&
+            {data?.status == "Disetujui_Seminar" &&
               userData.data.role == "mahasiswa" && (
                 <Button
                   color="default"
@@ -227,7 +227,7 @@ const ProposalSkripsi = () => {
                     <Button
                       type="primary"
                       icon={<EditOutlined />}
-                      onClick={() => navigate(`/proposal/edit/${data?._id}`)}
+                      onClick={() => navigate(`/skripsi/edit/${data?._id}`)}
                     />
                   </Tooltip>
                   <Tooltip title="Hapus">
@@ -288,8 +288,14 @@ const ProposalSkripsi = () => {
                   Setujui
                 </Button>
               )}
-            {data?.drive && (
-              <Button color="cyan" variant="solid" style={{ marginBottom: 5 }}>
+            {data?.berkas_seminar && (
+              <Button
+                color="cyan"
+                variant="solid"
+                style={{ marginBottom: 5 }}
+                href={data?.berkas_seminar}
+                target="_blank"
+              >
                 Drive
               </Button>
             )}
@@ -314,7 +320,43 @@ const ProposalSkripsi = () => {
     },
     {
       key: "2",
-      label: "Disetujui",
+      label: "Disetujui Seminar",
+      children: (
+        <Table
+          columns={columns}
+          dataSource={data}
+          scroll={{ x: "max-content" }}
+          bordered={true}
+        />
+      ),
+    },
+    {
+      key: "3",
+      label: "Permohonan Sidang",
+      children: (
+        <Table
+          columns={columns}
+          dataSource={data}
+          scroll={{ x: "max-content" }}
+          bordered={true}
+        />
+      ),
+    },
+    {
+      key: "4",
+      label: "Disetujui Sidang",
+      children: (
+        <Table
+          columns={columns}
+          dataSource={data}
+          scroll={{ x: "max-content" }}
+          bordered={true}
+        />
+      ),
+    },
+    {
+      key: "5",
+      label: "Selesai",
       children: (
         <Table
           columns={columns}
@@ -328,7 +370,7 @@ const ProposalSkripsi = () => {
 
   return (
     <div>
-      <h1 style={{ marginBottom: 20 }}>Proposal Skripsi</h1>
+      <h1 style={{ marginBottom: 20 }}>Judul Skripsi</h1>
       <div
         style={{
           padding: 30,
@@ -339,16 +381,16 @@ const ProposalSkripsi = () => {
       >
         <Row>
           <Col xs={24} md={12}>
-            <h3 style={{ marginBottom: 20 }}>Daftar Proposal Skripsi</h3>
+            <h3 style={{ marginBottom: 20 }}>Daftar Judul Skripsi</h3>
           </Col>
           {userData?.data?.role === "mahasiswa" && (
             <Col xs={24} md={12} style={{ textAlign: "end" }}>
               <Button
                 icon={<PlusOutlined />}
-                onClick={() => navigate("/proposal/add")}
+                onClick={() => navigate("/skripsi/add")}
                 style={{ marginBottom: 20 }}
               >
-                Tambah Proposal
+                Tambah Judul Skripsi
               </Button>
             </Col>
           )}
@@ -372,4 +414,4 @@ const ProposalSkripsi = () => {
   );
 };
 
-export default ProposalSkripsi;
+export default JudulSkripsi;

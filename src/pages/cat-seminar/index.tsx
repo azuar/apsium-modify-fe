@@ -158,7 +158,7 @@ const CatSeminar = () => {
             color="cyan"
             variant="solid"
             style={{ marginBottom: 5 }}
-            href={data?.drive}
+            href={data?.berkas_seminar}
             target="_blank"
           >
             Drive
