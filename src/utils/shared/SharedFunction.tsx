@@ -42,12 +42,29 @@ export default function getData(key: any = "1") {
               }
             });
           } else if (location.pathname.includes("seminar")) {
+            const status =
+              key == "1"
+                ? "Terjadwal_Seminar"
+                : key == "2"
+                ? "Revisi_Seminar"
+                : "Selesai";
             newData = data.filter(
               (e: any) =>
-                e.penguji1?.nip === userData?.data?.nip ||
-                e.penguji2?.nip === userData?.data?.nip ||
-                e.penguji3?.nip === userData?.data?.nip
+                (e.penguji1?.nip === userData?.data?.nip ||
+                  e.penguji2?.nip === userData?.data?.nip ||
+                  e.penguji3?.nip === userData?.data?.nip) &&
+                e.status.includes(status)
             );
+            newData.map((e: any, index: any) => {
+              e.no = index + 1;
+              if (e.penguji1.nip === userData.data.nip) {
+                e.status_penguji = "penguji1";
+              } else if (e.penguji2.nip === userData.data.nip) {
+                e.status_penguji = "penguji2";
+              } else {
+                e.status_penguji = "penguji3";
+              }
+            });
           }
           return newData;
         } else if (userData.data.role === "admin") {

@@ -10,9 +10,11 @@ import {
   Spin,
   TimePicker,
 } from "antd";
+// import TextArea from "antd/es/input/TextArea";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import RswEditor, { EditorProvider } from "react-simple-wysiwyg";
 
 const FormComponent = (data: any) => {
   const LOCAL_URL = "https://apsium-modify-be.vercel.app";
@@ -98,6 +100,15 @@ const FormComponent = (data: any) => {
       delete bodyReq._id;
       if (data?.status) {
         bodyReq.status = data?.status;
+      }
+      if (data?.penguji) {
+        if (!bodyReq.catatan_seminar) {
+          bodyReq.catatan_seminar = [];
+        }
+        bodyReq.catatan_seminar.push({
+          penguji: data?.penguji,
+          catatan: formData.catatan,
+        });
       }
       if (data?.user_id) {
         bodyReq.user_id = data?.user_id;
@@ -212,6 +223,21 @@ const FormComponent = (data: any) => {
                       });
                     }}
                   />
+                ) : element.type === "textarea" ? (
+                  // <TextArea
+                  //   rows={6}
+                  //   name={element.name}
+                  //   value={formData[element.name]}
+                  //   onChange={handleInputChange}
+                  // />
+                  <EditorProvider>
+                    <RswEditor
+                      name={element.name}
+                      value={formData[element.name]}
+                      onChange={handleInputChange}
+                      containerProps={{ style: { resize: "vertical" } }}
+                    />
+                  </EditorProvider>
                 ) : null}
               </Form.Item>
             ))}

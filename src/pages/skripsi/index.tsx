@@ -296,7 +296,7 @@ const JudulSkripsi = () => {
                 href={data?.berkas_seminar}
                 target="_blank"
               >
-                Drive
+                Berkas Seminar
               </Button>
             )}
           </>

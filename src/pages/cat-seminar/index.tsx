@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import getData from "../../utils/shared/SharedFunction";
 import ModalSkripsi from "../../components/ModalComponent";
 import dayjs from "dayjs";
+import FormComponent from "../../components/FormComponent";
 
 const CatSeminar = () => {
   const dataUser: any = localStorage.getItem("user");
@@ -26,6 +27,69 @@ const CatSeminar = () => {
     });
   };
 
+  const lihatCatatan = (catatan: any, penguji: any) => {
+    const catatanpenguji = catatan.filter((x: any) => x.penguji == penguji)[0];
+    confirm({
+      title: "Catatan Seminar",
+      content: (
+        <div>
+          <hr />
+          <div
+            style={{ margin: 20 }}
+            dangerouslySetInnerHTML={{ __html: catatanpenguji.catatan }}
+          ></div>
+        </div>
+      ),
+      icon: null,
+      footer: null,
+      closable: true,
+      width: 500,
+      afterClose: () => {
+        resultData();
+      },
+    });
+  };
+
+  const setCatatanSeminar = (id: any, penguji: any) => {
+    const form = [
+      {
+        label: "Catatan",
+        name: "catatan",
+        type: "textarea",
+      },
+    ];
+    const button = [
+      {
+        label: "Cancel",
+        type: "cancel",
+      },
+      {
+        label: "Simpan",
+        type: "submit",
+      },
+    ];
+    confirm({
+      content: (
+        <FormComponent
+          id={id}
+          endPoint={"skripsi"}
+          title="Catatan Seminar"
+          form={form}
+          button={button}
+          formType={"modal"}
+          successMessage={"Catatan berhasil disimpan!!"}
+          penguji={penguji}
+        />
+      ),
+      icon: null,
+      footer: null,
+      width: 500,
+      afterClose: () => {
+        resultData();
+      },
+    });
+  };
+
   const resultData = (key: any = "1") => {
     setLoading(true);
     let dataSkripsi = getData(key);
@@ -40,7 +104,7 @@ const CatSeminar = () => {
           (e: any) =>
             e.status === "Terjadwal_Seminar" ||
             e.status === "Revisi_Seminar" ||
-            e.status === "Selesai Seminar"
+            e.status === "Selesai_Seminar"
         );
         setData(filterData);
         setLoading(false);
@@ -151,6 +215,39 @@ const CatSeminar = () => {
       title: "",
       key: "action",
       width: 50,
+      hidden: userData.data.role != "dosen",
+      render: (data: any) => (
+        <>
+          {data?.catatan_seminar?.filter(
+            (x: any) => x.penguji == data.status_penguji
+          ).length ? (
+            <Button
+              color="cyan"
+              variant="solid"
+              style={{ marginBottom: 5 }}
+              onClick={() =>
+                lihatCatatan(data.catatan_seminar, data.status_penguji)
+              }
+            >
+              Lihat Catatan
+            </Button>
+          ) : (
+            <Button
+              color="cyan"
+              variant="solid"
+              style={{ marginBottom: 5 }}
+              onClick={() => setCatatanSeminar(data._id, data.status_penguji)}
+            >
+              Buat Catatan
+            </Button>
+          )}
+        </>
+      ),
+    },
+    {
+      title: "",
+      key: "action",
+      width: 50,
       hidden: userData.data.role != "admin" || activeKey != "1",
       render: (data: any) => (
         <>
@@ -161,7 +258,7 @@ const CatSeminar = () => {
             href={data?.berkas_seminar}
             target="_blank"
           >
-            Drive
+            Berkas Seminar
           </Button>
           <Button
             color="default"
@@ -220,6 +317,20 @@ const CatSeminar = () => {
       label: "Selesai",
     },
   ];
+  const tabsItemsDosen: TabsProps["items"] = [
+    {
+      key: "1",
+      label: "Terjadwal Seminar",
+    },
+    {
+      key: "2",
+      label: "Revisi",
+    },
+    {
+      key: "3",
+      label: "Selesai",
+    },
+  ];
 
   useEffect(() => {
     resultData();
@@ -239,16 +350,19 @@ const CatSeminar = () => {
         {userData.data.role !== "admin" && (
           <h3 style={{ marginBottom: 20 }}>Daftar Seminar</h3>
         )}
-        {userData.data.role === "admin" && (
-          <Tabs
-            defaultActiveKey="1"
-            items={tabsItems}
-            onChange={(key) => {
-              setActiveKey(key);
-              resultData(key);
-            }}
-          />
-        )}
+        {userData.data.role === "admin" ||
+          (userData.data.role == "dosen" && (
+            <Tabs
+              defaultActiveKey="1"
+              items={
+                userData.data.role === "admin" ? tabsItems : tabsItemsDosen
+              }
+              onChange={(key) => {
+                setActiveKey(key);
+                resultData(key);
+              }}
+            />
+          ))}
         <Spin spinning={loading}>
           <Table
             columns={columns}
