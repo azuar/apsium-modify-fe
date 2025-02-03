@@ -98,7 +98,7 @@ const JudulSkripsi = () => {
       if (data.setuju1) {
         body = {
           setuju2: true,
-          status: "Disetujui_Pembimbing",
+          status: "Disetujui_Seminar",
         };
       } else {
         body = {
@@ -109,7 +109,7 @@ const JudulSkripsi = () => {
       if (data.setuju2) {
         body = {
           setuju1: true,
-          status: "Disetujui_Pembimbing",
+          status: "Disetujui_Seminar",
         };
       } else {
         body = {
