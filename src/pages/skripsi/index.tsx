@@ -94,11 +94,15 @@ const JudulSkripsi = () => {
 
   const approved = (data: any) => {
     let body = new Object();
+    const status =
+      data.status === "Permohonan_Seminar"
+        ? "Disetujui_Seminar"
+        : "Disetujui_Sidang";
     if (data.status_pembimbing == "pembimbing2") {
       if (data.setuju1) {
         body = {
           setuju2: true,
-          status: "Disetujui_Seminar",
+          status: status,
         };
       } else {
         body = {
@@ -109,7 +113,7 @@ const JudulSkripsi = () => {
       if (data.setuju2) {
         body = {
           setuju1: true,
-          status: "Disetujui_Seminar",
+          status: status,
         };
       } else {
         body = {
@@ -128,6 +132,45 @@ const JudulSkripsi = () => {
       null,
       body
     );
+  };
+
+  const lihatCatatan = (data: any) => {
+    function compare(a: any, b: any) {
+      if (a.penguji < b.penguji) {
+        return -1;
+      }
+      if (a.penguji > b.penguji) {
+        return 1;
+      }
+      return 0;
+    }
+
+    data.catatan_seminar.sort(compare);
+    confirm({
+      title: <h3 style={{ textAlign: "center" }}>Catatan Seminar</h3>,
+      content: (
+        <div>
+          <hr style={{ width: "40px", display: "block", margin: "auto" }} />
+          {data.catatan_seminar.map((element: any) => (
+            <div style={{ margin: 20 }}>
+              <h4 style={{ textAlign: "center" }}>
+                {element.penguji == "penguji3"
+                  ? `${data.penguji3.nama} (Penguji 3)`
+                  : element.penguji == "penguji2"
+                  ? `${data.penguji2.nama} (Penguji 2)`
+                  : `${data.penguji1.nama} (Penguji 1)`}
+              </h4>
+              <hr style={{ border: "1px solid lightgray", marginBlock: 10 }} />
+              <div dangerouslySetInnerHTML={{ __html: element.catatan }}></div>
+            </div>
+          ))}
+        </div>
+      ),
+      icon: null,
+      footer: null,
+      closable: true,
+      width: 500,
+    });
   };
 
   const columns: TableColumnsType<any> = [
@@ -276,7 +319,8 @@ const JudulSkripsi = () => {
                 </Flex>
               </>
             )}
-            {data?.status == "Permohonan_Seminar" &&
+            {(data?.status == "Permohonan_Seminar" ||
+              data?.status == "Permohonan_Sidang") &&
               userData.data.role == "dosen" &&
               data?.persetujuan == false && (
                 <Button
@@ -288,7 +332,7 @@ const JudulSkripsi = () => {
                   Setujui
                 </Button>
               )}
-            {data?.berkas_seminar && (
+            {data?.berkas_seminar && data.status.includes("Seminar") && (
               <Button
                 color="cyan"
                 variant="solid"
@@ -297,6 +341,27 @@ const JudulSkripsi = () => {
                 target="_blank"
               >
                 Berkas Seminar
+              </Button>
+            )}
+            {data?.berkas_revisi_seminar && data.status.includes("Seminar") && (
+              <Button
+                color="cyan"
+                variant="solid"
+                style={{ marginBottom: 5 }}
+                href={data?.berkas_revisi_seminar}
+                target="_blank"
+              >
+                Berkas Revisi
+              </Button>
+            )}
+            {data?.catatan_seminar && data.status.includes("Seminar") && (
+              <Button
+                color="cyan"
+                variant="solid"
+                style={{ marginBottom: 5 }}
+                onClick={() => lihatCatatan(data)}
+              >
+                Catatan Seminar
               </Button>
             )}
           </>

@@ -4,6 +4,8 @@ import getData from "../../utils/shared/SharedFunction";
 import ModalSkripsi from "../../components/ModalComponent";
 import dayjs from "dayjs";
 import FormComponent from "../../components/FormComponent";
+import showConfirm from "../../utils/shared/confirmFuction";
+import { ExclamationCircleFilled } from "@ant-design/icons";
 
 const CatSeminar = () => {
   const dataUser: any = localStorage.getItem("user");
@@ -22,22 +24,100 @@ const CatSeminar = () => {
       footer: null,
       width: 500,
       afterClose: () => {
-        resultData();
+        resultData(activeKey);
       },
     });
   };
 
-  const lihatCatatan = (catatan: any, penguji: any) => {
-    const catatanpenguji = catatan.filter((x: any) => x.penguji == penguji)[0];
+  const uploadBerkas = (data: any) => {
+    const form = [
+      {
+        label: "Link Drive Berkas",
+        name: "berkas_revisi_seminar",
+        type: "input",
+      },
+    ];
+
+    const button = [
+      {
+        label: "Batal",
+        type: "cancel",
+      },
+      {
+        label: "Kirim",
+        type: "submit",
+      },
+    ];
+
     confirm({
-      title: "Catatan Seminar",
+      content: (
+        <FormComponent
+          endPoint={"skripsi"}
+          id={data._id}
+          title="Berkas Revisi Seminar"
+          form={form}
+          button={button}
+          formType={"modal"}
+          successMessage={"Berkas Revisi Berhasil Dikirim!!"}
+        />
+      ),
+      icon: null,
+      footer: null,
+      width: 500,
+      afterClose: () => {
+        resultData(activeKey);
+      },
+    });
+  };
+
+  const lihatCatatan = (data: any, penguji: any = null) => {
+    function compare(a: any, b: any) {
+      if (a.penguji < b.penguji) {
+        return -1;
+      }
+      if (a.penguji > b.penguji) {
+        return 1;
+      }
+      return 0;
+    }
+
+    let catatanpenguji;
+    if (penguji) {
+      catatanpenguji = data.catatan_seminar.filter(
+        (x: any) => x.penguji == penguji
+      )[0];
+    } else {
+      data.catatan_seminar.sort(compare);
+    }
+    confirm({
+      title: <h3 style={{ textAlign: "center" }}>Catatan Seminar</h3>,
       content: (
         <div>
-          <hr />
-          <div
-            style={{ margin: 20 }}
-            dangerouslySetInnerHTML={{ __html: catatanpenguji.catatan }}
-          ></div>
+          <hr style={{ width: "40px", display: "block", margin: "auto" }} />
+          {penguji ? (
+            <div
+              style={{ margin: 20 }}
+              dangerouslySetInnerHTML={{ __html: catatanpenguji.catatan }}
+            ></div>
+          ) : (
+            data.catatan_seminar.map((element: any) => (
+              <div style={{ margin: 20 }}>
+                <h4 style={{ textAlign: "center" }}>
+                  {element.penguji == "penguji3"
+                    ? `${data.penguji3.nama} (Penguji 3)`
+                    : element.penguji == "penguji2"
+                    ? `${data.penguji2.nama} (Penguji 2)`
+                    : `${data.penguji1.nama} (Penguji 1)`}
+                </h4>
+                <hr
+                  style={{ border: "1px solid lightgray", marginBlock: 10 }}
+                />
+                <div
+                  dangerouslySetInnerHTML={{ __html: element.catatan }}
+                ></div>
+              </div>
+            ))
+          )}
         </div>
       ),
       icon: null,
@@ -45,7 +125,7 @@ const CatSeminar = () => {
       closable: true,
       width: 500,
       afterClose: () => {
-        resultData();
+        resultData(activeKey);
       },
     });
   };
@@ -85,20 +165,24 @@ const CatSeminar = () => {
       footer: null,
       width: 500,
       afterClose: () => {
-        resultData();
+        resultData(activeKey);
       },
     });
   };
 
   const resultData = (key: any = "1") => {
     setLoading(true);
+    if (userData.data.role == "dosen" && key == "1") {
+      setActiveKey("2");
+      key = "2";
+    }
     let dataSkripsi = getData(key);
     dataSkripsi?.then((result) => {
       result.map((x: any, index: any) => {
         x.no = index + 1;
       });
       let filterData;
-      if (userData.data.role !== "admin") {
+      if (userData.data.role == "mahasiswa") {
         setActiveKey("2");
         filterData = result.filter(
           (e: any) =>
@@ -225,9 +309,7 @@ const CatSeminar = () => {
               color="cyan"
               variant="solid"
               style={{ marginBottom: 5 }}
-              onClick={() =>
-                lihatCatatan(data.catatan_seminar, data.status_penguji)
-              }
+              onClick={() => lihatCatatan(data, data.status_penguji)}
             >
               Lihat Catatan
             </Button>
@@ -248,27 +330,69 @@ const CatSeminar = () => {
       title: "",
       key: "action",
       width: 50,
-      hidden: userData.data.role != "admin" || activeKey != "1",
+      hidden: userData.data.role != "admin",
       render: (data: any) => (
         <>
-          <Button
-            color="cyan"
-            variant="solid"
-            style={{ marginBottom: 5 }}
-            href={data?.berkas_seminar}
-            target="_blank"
-          >
-            Berkas Seminar
-          </Button>
-          <Button
-            color="default"
-            variant="solid"
-            onClick={() => {
-              jadwalkanSeminar(data?._id);
-            }}
-          >
-            Jadwalkan Seminar
-          </Button>
+          {data.status == "Verifikasi_Seminar" && (
+            <Button
+              color="cyan"
+              variant="solid"
+              style={{ marginBottom: 5 }}
+              href={data?.berkas_seminar}
+              target="_blank"
+            >
+              Berkas Seminar
+            </Button>
+          )}
+          {data?.berkas_revisi_seminar && (
+            <Button
+              color="cyan"
+              variant="solid"
+              style={{ marginBottom: 5 }}
+              href={data?.berkas_revisi_seminar}
+              target="_blank"
+            >
+              Berkas Revisi
+            </Button>
+          )}
+          {activeKey == "1" ? (
+            <Button
+              color="default"
+              variant="solid"
+              onClick={() => {
+                jadwalkanSeminar(data?._id);
+              }}
+            >
+              Jadwalkan Seminar
+            </Button>
+          ) : activeKey == "2" || activeKey == "3" ? (
+            <Button
+              color="default"
+              variant="solid"
+              onClick={() => {
+                const status = data.status.includes("Revisi")
+                  ? "Selesai_Seminar"
+                  : "Revisi_Seminar";
+                showConfirm(
+                  `Apakah anda yakin ingin memindahkan status menjadi ${status}?`,
+                  <ExclamationCircleFilled />,
+                  "skripsi/update",
+                  data._id,
+                  loading,
+                  setLoading,
+                  resultData,
+                  null,
+                  {
+                    status: status,
+                  },
+                  null,
+                  activeKey
+                );
+              }}
+            >
+              Update Status
+            </Button>
+          ) : null}
         </>
       ),
     },
@@ -290,10 +414,25 @@ const CatSeminar = () => {
             </Button>
           )}
           {data.status == "Revisi_Seminar" && (
-            <Button color="default" variant="solid" style={{ marginBottom: 5 }}>
+            <Button
+              color="default"
+              variant="solid"
+              style={{ marginBottom: 5 }}
+              onClick={() => uploadBerkas(data)}
+            >
               Upload Berkas Revisi
             </Button>
           )}
+          {data?.catatan_seminar?.length ? (
+            <Button
+              color="cyan"
+              variant="solid"
+              style={{ marginBottom: 5 }}
+              onClick={() => lihatCatatan(data)}
+            >
+              Lihat Catatan
+            </Button>
+          ) : null}
         </>
       ),
     },
@@ -319,15 +458,15 @@ const CatSeminar = () => {
   ];
   const tabsItemsDosen: TabsProps["items"] = [
     {
-      key: "1",
+      key: "2",
       label: "Terjadwal Seminar",
     },
     {
-      key: "2",
+      key: "3",
       label: "Revisi",
     },
     {
-      key: "3",
+      key: "4",
       label: "Selesai",
     },
   ];
@@ -350,19 +489,16 @@ const CatSeminar = () => {
         {userData.data.role !== "admin" && (
           <h3 style={{ marginBottom: 20 }}>Daftar Seminar</h3>
         )}
-        {userData.data.role === "admin" ||
-          (userData.data.role == "dosen" && (
-            <Tabs
-              defaultActiveKey="1"
-              items={
-                userData.data.role === "admin" ? tabsItems : tabsItemsDosen
-              }
-              onChange={(key) => {
-                setActiveKey(key);
-                resultData(key);
-              }}
-            />
-          ))}
+        {(userData.data.role === "admin" || userData.data.role == "dosen") && (
+          <Tabs
+            defaultActiveKey="1"
+            items={userData.data.role === "admin" ? tabsItems : tabsItemsDosen}
+            onChange={(key) => {
+              setActiveKey(key);
+              resultData(key);
+            }}
+          />
+        )}
         <Spin spinning={loading}>
           <Table
             columns={columns}

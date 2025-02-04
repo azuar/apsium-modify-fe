@@ -5,7 +5,10 @@ const Profil = () => {
   const userData = JSON.parse(dataUser);
   const form = [
     {
-      label: "Nomor Induk Mahasiswa",
+      label:
+        userData?.data?.role == "dosen"
+          ? "Nomor Induk Pegawai"
+          : "Nomor Induk Mahasiswa",
       name: userData?.data?.role == "dosen" ? "nip" : "nim",
       type: "input",
     },

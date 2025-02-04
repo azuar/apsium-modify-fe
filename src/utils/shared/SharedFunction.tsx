@@ -43,9 +43,9 @@ export default function getData(key: any = "1") {
             });
           } else if (location.pathname.includes("seminar")) {
             const status =
-              key == "1"
+              key == "2"
                 ? "Terjadwal_Seminar"
-                : key == "2"
+                : key == "3"
                 ? "Revisi_Seminar"
                 : "Selesai";
             newData = data.filter(

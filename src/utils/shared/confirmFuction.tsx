@@ -11,10 +11,11 @@ const showConfirm = (
   id: string,
   isLoading: boolean,
   setLoading: (loading: boolean) => void,
-  ResultData: () => void,
+  ResultData: (activeKey: any) => void,
   content: any = null,
   body: any = null,
-  width: any = null
+  width: any = null,
+  activeKey: any = "1"
 ) => {
   confirm({
     title: title,
@@ -30,7 +31,7 @@ const showConfirm = (
         await axios
           .delete(`${LOCAL_URL}/api/${endpoint}/${id}`)
           .then(() => {
-            ResultData();
+            ResultData(activeKey);
             setLoading(false);
           })
           .catch((err) => {
@@ -41,7 +42,7 @@ const showConfirm = (
         await axios
           .put(`${LOCAL_URL}/api/${endpoint}/${id}`, body)
           .then(() => {
-            ResultData();
+            ResultData(activeKey);
             setLoading(false);
           })
           .catch((err) => {
