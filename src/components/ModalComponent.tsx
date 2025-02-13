@@ -27,14 +27,22 @@ const ModalSkripsi = (data: any) => {
 
   const form = [
     {
-      label: "Tanggal Seminar",
-      name: "tanggal_seminar",
+      label: location.pathname.includes("seminar")
+        ? "Tanggal Seminar"
+        : "Tanggal Sidang",
+      name: location.pathname.includes("seminar")
+        ? "tanggal_seminar"
+        : "tanggal_sidang",
       type: "date",
       disabledDate: disabledDate,
     },
     {
-      label: "Waktu Seminar",
-      name: "waktu_seminar",
+      label: location.pathname.includes("seminar")
+        ? "Waktu Seminar"
+        : "Waktu Sidang",
+      name: location.pathname.includes("seminar")
+        ? "waktu_seminar"
+        : "waktu_sidang",
       type: "time",
     },
     {
@@ -63,7 +71,9 @@ const ModalSkripsi = (data: any) => {
       type: "cancel",
     },
     {
-      label: "Jadwalkan Seminar",
+      label: location.pathname.includes("seminar")
+        ? "Jadwalkan Seminar"
+        : "Jadwalkan Sidang",
       type: "submit",
     },
   ];
@@ -72,12 +82,22 @@ const ModalSkripsi = (data: any) => {
     <FormComponent
       endPoint={"skripsi"}
       id={data.id}
-      title="Jadwalkan Seminar"
+      title={
+        location.pathname.includes("seminar")
+          ? "Jadwalkan Seminar"
+          : "Jadwalkan Sidang"
+      }
       form={form}
       button={button}
       formType={"modal"}
-      status={"Terjadwal_Seminar"}
-      successMessage={"Skripsi berhasil dijadwalkan untuk seminar"}
+      status={
+        location.pathname.includes("seminar")
+          ? "Terjadwal_Seminar"
+          : "Terjadwal_Sidang"
+      }
+      successMessage={`Skripsi berhasil dijadwalkan untuk ${
+        location.pathname.includes("seminar") ? "seminar" : "sidang"
+      }`}
     />
   );
 };

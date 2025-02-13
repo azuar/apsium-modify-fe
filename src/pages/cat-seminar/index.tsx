@@ -29,6 +29,36 @@ const CatSeminar = () => {
     });
   };
 
+  const AjukanSidang = (data: any) => {
+    const form = [
+      {
+        label: "Link Drive Berkas",
+        name: "berkas_sidang",
+        type: "input",
+      },
+    ];
+
+    const button = [
+      {
+        label: "Batal",
+        type: "cancel",
+      },
+      {
+        label: "Ajukan Sidang",
+        type: "submit",
+      },
+    ];
+
+    confirmFunction(
+      data,
+      "Pengajuan Sidang",
+      form,
+      button,
+      "Pengajuan sidang berhasil dikirim",
+      "Verifikasi_Sidang"
+    );
+  };
+
   const uploadBerkas = (data: any) => {
     const form = [
       {
@@ -49,16 +79,34 @@ const CatSeminar = () => {
       },
     ];
 
+    confirmFunction(
+      data,
+      "Berkas Revisi Seminar",
+      form,
+      button,
+      "Berkas Revisi Berhasil Dikirim!!"
+    );
+  };
+
+  const confirmFunction = (
+    data: any,
+    title: any,
+    form: any,
+    button: any,
+    message: any,
+    status: any = null
+  ) => {
     confirm({
       content: (
         <FormComponent
           endPoint={"skripsi"}
           id={data._id}
-          title="Berkas Revisi Seminar"
+          title={title}
           form={form}
           button={button}
+          status={status}
           formType={"modal"}
-          successMessage={"Berkas Revisi Berhasil Dikirim!!"}
+          successMessage={message}
         />
       ),
       icon: null,
@@ -188,7 +236,8 @@ const CatSeminar = () => {
           (e: any) =>
             e.status === "Terjadwal_Seminar" ||
             e.status === "Revisi_Seminar" ||
-            e.status === "Selesai_Seminar"
+            e.status === "Selesai_Proposal" ||
+            e.status === "Verifikasi_Sidang"
         );
         setData(filterData);
         setLoading(false);
@@ -333,7 +382,7 @@ const CatSeminar = () => {
       hidden: userData.data.role != "admin",
       render: (data: any) => (
         <>
-          {data.status == "Verifikasi_Seminar" && (
+          {data?.berkas_seminar && (
             <Button
               color="cyan"
               variant="solid"
@@ -403,13 +452,13 @@ const CatSeminar = () => {
       hidden: userData.data.role != "mahasiswa",
       render: (data: any) => (
         <>
-          {data.catatan && (
-            <Button color="default" variant="solid" style={{ marginBottom: 5 }}>
-              Catatan
-            </Button>
-          )}
-          {data.status == "Selesai_Seminar" && (
-            <Button color="default" variant="solid" style={{ marginBottom: 5 }}>
+          {data.status == "Selesai_Proposal" && (
+            <Button
+              color="default"
+              variant="solid"
+              style={{ marginBottom: 5 }}
+              onClick={() => AjukanSidang(data)}
+            >
               Ajukan Sidang
             </Button>
           )}
@@ -423,7 +472,7 @@ const CatSeminar = () => {
               Upload Berkas Revisi
             </Button>
           )}
-          {data?.catatan_seminar?.length ? (
+          {data?.catatan_seminar?.length && data.status.includes("Seminar") ? (
             <Button
               color="cyan"
               variant="solid"

@@ -21,10 +21,10 @@ export default function getData(key: any = "1") {
                 : key == "2"
                 ? "Seminar"
                 : key == "3"
-                ? "Permohonan_Sidang"
+                ? "Selesai_Proposal"
                 : key == "4"
                 ? "Sidang"
-                : "Selesai";
+                : "Selesai_Skripsi";
             newData = data.filter(
               (e: any) =>
                 (e.pembimbing1.nip === userData.data.nip ||
@@ -41,13 +41,24 @@ export default function getData(key: any = "1") {
                 e.persetujuan = e.setuju2 ? true : false;
               }
             });
-          } else if (location.pathname.includes("seminar")) {
-            const status =
-              key == "2"
-                ? "Terjadwal_Seminar"
-                : key == "3"
-                ? "Revisi_Seminar"
-                : "Selesai";
+          } else if (!location.pathname.includes("skripsi")) {
+            let status = "";
+            if (location.pathname.includes("seminar")) {
+              status =
+                key == "2"
+                  ? "Terjadwal_Seminar"
+                  : key == "3"
+                  ? "Revisi_Seminar"
+                  : "Selesai_Proposal";
+            } else {
+              status =
+                key == "2"
+                  ? "Terjadwal_Sidang"
+                  : key == "3"
+                  ? "Revisi_Sidang"
+                  : "Selesai_Skripsi";
+            }
+
             newData = data.filter(
               (e: any) =>
                 (e.penguji1?.nip === userData?.data?.nip ||
@@ -68,14 +79,27 @@ export default function getData(key: any = "1") {
           }
           return newData;
         } else if (userData.data.role === "admin") {
-          const status =
-            key == "1"
-              ? "Verifikasi_Seminar"
-              : key == "2"
-              ? "Terjadwal_Seminar"
-              : key == "3"
-              ? "Revisi_Seminar"
-              : "Selesai_Seminar";
+          let status = "";
+          if (location.pathname.includes("seminar")) {
+            status =
+              key == "1"
+                ? "Verifikasi_Seminar"
+                : key == "2"
+                ? "Terjadwal_Seminar"
+                : key == "3"
+                ? "Revisi_Seminar"
+                : "Selesai_Proposal";
+          } else {
+            status =
+              key == "1"
+                ? "Verifikasi_Sidang"
+                : key == "2"
+                ? "Terjadwal_Sidang"
+                : key == "3"
+                ? "Revisi_Sidang"
+                : "Selesai_Skripsi";
+          }
+
           const newData = data.filter((e: any) => e.status == status);
           newData.map((e: any, index: any) => {
             e.no = index + 1;

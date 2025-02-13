@@ -319,8 +319,7 @@ const JudulSkripsi = () => {
                 </Flex>
               </>
             )}
-            {(data?.status == "Permohonan_Seminar" ||
-              data?.status == "Permohonan_Sidang") &&
+            {data?.status == "Permohonan_Seminar" &&
               userData.data.role == "dosen" &&
               data?.persetujuan == false && (
                 <Button
@@ -332,7 +331,7 @@ const JudulSkripsi = () => {
                   Setujui
                 </Button>
               )}
-            {data?.berkas_seminar && data.status.includes("Seminar") && (
+            {data?.berkas_seminar && (
               <Button
                 color="cyan"
                 variant="solid"
@@ -343,7 +342,7 @@ const JudulSkripsi = () => {
                 Berkas Seminar
               </Button>
             )}
-            {data?.berkas_revisi_seminar && data.status.includes("Seminar") && (
+            {data?.berkas_revisi_seminar && (
               <Button
                 color="cyan"
                 variant="solid"
@@ -351,7 +350,29 @@ const JudulSkripsi = () => {
                 href={data?.berkas_revisi_seminar}
                 target="_blank"
               >
-                Berkas Revisi
+                Berkas Revisi Seminar
+              </Button>
+            )}
+            {data?.berkas_sidang && (
+              <Button
+                color="cyan"
+                variant="solid"
+                style={{ marginBottom: 5 }}
+                href={data?.berkas_sidang}
+                target="_blank"
+              >
+                Berkas Sidang
+              </Button>
+            )}
+            {data?.berkas_revisi_sidang && (
+              <Button
+                color="cyan"
+                variant="solid"
+                style={{ marginBottom: 5 }}
+                href={data?.berkas_revisi_sidang}
+                target="_blank"
+              >
+                Berkas Revisi Sidang
               </Button>
             )}
             {data?.catatan_seminar && data.status.includes("Seminar") && (
@@ -397,7 +418,7 @@ const JudulSkripsi = () => {
     },
     {
       key: "3",
-      label: "Permohonan Sidang",
+      label: "Selesai Seminar",
       children: (
         <Table
           columns={columns}
@@ -409,7 +430,7 @@ const JudulSkripsi = () => {
     },
     {
       key: "4",
-      label: "Disetujui Sidang",
+      label: "Sidang Akhir",
       children: (
         <Table
           columns={columns}
